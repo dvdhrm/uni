@@ -1,0 +1,101 @@
+IDS - Uebung 1
+(Mit Monospace-Font lesen...)
+
+Aufgabe 1:
+1)
+	dezimal 156 nach binär:
+	bin(1000 0000) = 128 = 156 - 28
+	bin(1001 0000) = 144 = 156 - 12
+	bin(1001 1000) = 152 = 156 - 4
+	bin(1001 1100) = 156
+2)
+	oktal 63 nach dezimal:
+	bin(110 011) = oct(63)
+	bin(11 0011) = 32 + 16 + 2 + 1 = 51
+3)
+	47,625 dezimal nach binär
+	bin(0010 1111) = 47
+	bin(0 , 101) = 0,625
+	bin(0010 1111 , 1010) = 47,625
+4)
+	176,5 dezimal nach hexadezimal
+	hex(b0) = 176
+	hex(0 , 8) = 0,5
+	hex(b0 , 8) = 176,5
+5)
+	e78 hexadezimal nach oktal
+	bin(1110 0111 1000) = hex(e78)
+	bin(111 001 111 000) = oct(7170)
+6)
+	1010 1001 0010 binär nach hexadezimal
+	hex(0a92) = bin(1010 1001 0010)
+
+Aufgabe 2:
+	X = 22 / 7 = 3.14285714
+	X = 2^1 * 1.57142857
+1)
+	X = (-1)^s * 2 ^ (e - 15) * (1 + f)
+	X = (-1)^0 * 2 ^ (16 - 15) * (1 + 0.57142857)
+2)
+	s = 0
+	s-binär: 0
+	e = 16
+	e-binär: 10000
+	f = 0.57142857
+	f-binär: 0 , 1001 0010 0100 (periode 100)
+	f-binär: 0 , 10 0100 1001 (auf 10 Bit begrenzt)
+3)
+	s-e-f
+	0 10000 1001001001
+	0100 0010 0100 1001
+
+	Das Vorzeichen als MSB anzugeben ist sinnvoll, da es dann ähnlich zur
+	Zweierkomplementdarstellung ist und das Testen, ob die Zahl negativ ist,
+	ist bei beiden Methoden gleich (MSB auf 1 testen).
+	Außerdem lässt sich so die Mantisse durch eine einfache Maske bestimmen:
+		1111 1100 0000 0000
+	Man braucht danach kein Bitshifting mehr um die Mantisse zu bearbeiten.
+4)
+	bin(0100 0010 0100 1001) = hex(4249)
+
+Aufgabe 3:
+1)
+	Bitfolge: | VZL | 2er Komp. | Betrag/VZ
+	----------|-----|-----------|-----------
+	1010:     | 10  | -6        | -2
+	0000:     |  0  |  0        |  0
+	0101:     |  5  |  5        |  5
+	1000:     |  8  | -8        | -0
+	1110:     | 14  | -2        | -6
+	1111:     | 15  | -1        | -7
+2)
+	Zahl: | VZL  | 2er Komp. | Betrag/VZ
+	------|------|-----------|-----------
+	   -2 | N/A  | 1110      | 1010
+	   -5 | N/A  | 1011      | 1101
+	   10 | 1010 |    N/A    |    N/A
+	   -1 | N/A  | 1111      | 1001
+	   -7 | N/A  | 1001      | 1111
+	   -8 | N/A  | 1000      |    N/A
+
+Aufgabe 4)
+	Zeile:
+		return;
+	Hier tritt eine implizite Adressierung auf. Diese Zeile springt
+	zurück zur aufrufenden Funktion. Die aufrufende Funktion hat dazu
+	die Rücksprungadresse auf den Stack gelegt. Das "return" Keyword
+	nimmt somit implizit an, dass die Rücksprungadresse auf dem Stack
+	liegt und nimmt diese als Argument (mit Hilfe des StackPointers).
+
+	Zeile:
+		j = 32;
+	Hier tritt eine unmittelbare Adressierung auf. Die Konstante 32
+	wird der entsprechenden Variablen zugewiesen. Die Konstante wird
+	direkt übergeben und wird nicht erst aus einer Variablen/Register
+	gelesen.
+
+	Zeile:
+		... = a[i];
+	Hier tritt eine indizierte Adressierung auf. "a" enthält die
+	Basisadresse und "i" den index und es wird der Wert gelesen,
+	der an der Adresse "a+i" liegt.
