@@ -1,0 +1,20 @@
+body {
+	background-color: orange;
+	font-family: monospace;
+}
+
+h1 {
+	text-align: center;
+}
+
+.logo {
+	text-align: center;
+}
+
+.italic {
+	font-style: italic;
+}
+
+.bold {
+	font-weight: bold;
+}
