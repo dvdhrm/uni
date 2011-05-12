@@ -1,0 +1,111 @@
+(x, (y, x y prim+)) (a, (b, a b prim*)) 2 ap 3 ap ap 5 ap
+
+S=e
+E=0
+C=(x, (y, x y prim+)) (a, (b, a b prim*)) 2 ap 3 ap ap 5 ap
+D=e
+
+S=(x, (y, x y prim+), 0)
+E=0
+C=(a, (b, a b prim*)) 2 ap 3 ap ap 5 ap
+D=e
+
+S=(a, (b, a b prim*), 0) (x, (y, x a prim+), 0)
+E=0
+C=2 ap 3 ap ap 5 ap
+D=e
+
+S=2 (a, (b, a b prim*), 0) (x, (y, x y prim+), 0)
+E=0
+C=ap 3 ap ap 5 ap
+D=e
+
+S=e
+E={(a, 2)}
+C=(b, a b prim*)
+D=( (x, (y, x y prim+), 0), 0, 3 ap ap 5 ap)
+
+S=(b, a b prim*, {(a, 2)})
+E={(a, 2)}
+C=e
+D=( (x, (y, x y prim+), 0), 0, 3 ap ap 5 ap)
+
+S=(b, a b prim*, {(a, 2)}) (x, (y, x y prim+), 0)
+E=0
+C=3 ap ap 5 ap
+D=e
+
+S=3 (b, a b prim*, {(a, 2)}) (x, (y, x y prim+), 0)
+E=0
+C=ap ap 5 ap
+D=e
+
+S=e
+E={(a, 2) (b, 3)}
+C=a b prim*
+D=( (x, (y, x y prim+), 0), 0, ap 5 ap)
+
+S=2
+E={(a, 2), (b, 3)}
+C=b prim*
+D=( (x, (y, x y prim+), 0), 0, ap 5 ap)
+
+S=3 2
+E={(a, 2), (b, 3)}
+C=prim*
+D=( (x, (y, x y prim+), 0), 0, ap 5 ap)
+
+S=6
+E={(a, 2), (b, 3)}
+C=e
+D=( (x, (y, x y prim+), 0), 0, ap 5 ap)
+
+S=6 (x, (y, x y prim+), 0)
+E=0
+C=ap 5 ap
+D=e
+
+S=e
+E={(x, 6)}
+C=(y, x y prim+)
+D=(e, 0, 5 ap)
+
+S=(y, x y prim+, {(x, 6)})
+E={(x, 6)}
+C=e
+D=(e, 0, 5 ap)
+
+S=(y, x y prim+, {(x, 6)})
+E=0
+C=5 ap
+D=e
+
+S=5 (y, x y prim+, {(x, 6)})
+E=0
+C=ap
+D=e
+
+S=e
+E={(x, 6), (y, 5)}
+C=x y prim+
+D=(e, 0, e)
+
+S=6
+E={(x, 6), (y, 5)}
+C=y prim+
+D=(e, 0, e)
+
+S=5 6
+E={(x, 6), (y, 5)}
+C=prim+
+D=(e, 0, e)
+
+S=11
+E={(x, 6), (y, 5)}
+C=e
+D=(e, 0, e)
+
+S=11
+E=0
+C=e
+D=e
