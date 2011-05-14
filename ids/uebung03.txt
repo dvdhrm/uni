@@ -1,0 +1,163 @@
+IDS - Uebung 3 - David Herrmann
+
+Aufgabe 7:
+	6 x 14 = 84
+	= 14 x 6 = 84
+	= 1110 x 0110 = 84
+
+	=  11 10
+	    1 110
+	      0000
+	= 101 0100 = 84
+
+	11 x 5 = 55
+	= 1011 x 0101
+
+	= 10 11
+	   0 000
+	     1011
+	= 11 0111 = 55
+
+Aufgabe 8:
+	Nach Präprozessor: (gcc -O0 -E -o out.pre in.c)
+		const int lower = 12;
+
+		int sum = 0;
+
+		int main(void)
+		{
+			int i;
+			for (i = lower; i < 15; i++) {
+				sum += i;
+			}
+			return sum;
+		}
+	Der Präprozessor hat die macro-Konstante UPPER überall im Code durch
+	den definierten Wert ersetzt (15).
+
+	Der Präprozessor ersetzt Konstanten im ganze sourcecode, wendet Makros
+	an, bindet andere Dateien ein und kann für bedingte Codecompilierung
+	eingesetzt werden mit #if #elif #else
+
+	Nach Assemblierung: (gcc -O0 -S -o out.asm in.c)
+		lower:
+			.long	12
+			.globl	sum
+			.bss
+			.align 4
+			.type	sum, @object
+			.size	sum, 4
+		sum:
+			.zero	4
+			.text
+			.globl	main
+			.type	main, @function
+		main:
+		.LFB0:
+			.cfi_startproc
+			pushq	%rbp
+			.cfi_def_cfa_offset 16
+			.cfi_offset 6, -16
+			movq	%rsp, %rbp
+			.cfi_def_cfa_register 6
+			movl	lower(%rip), %eax
+			movl	%eax, -4(%rbp)
+			jmp	.L2
+		.L3:
+			movl	sum(%rip), %eax
+			addl	-4(%rbp), %eax
+			movl	%eax, sum(%rip)
+			addl	$1, -4(%rbp)
+		.L2:
+			cmpl	$14, -4(%rbp)
+			jle	.L3
+			movl	sum(%rip), %eax
+			popq	%rbp
+			.cfi_def_cfa 7, 8
+			ret
+			.cfi_endproc
+	sum und lower sind definiert in:
+		lower:
+			.long	12
+		sum:
+			.zero	4
+	lower als .long 12 und sum als 4 byte zero.
+	i ist definiert als stack variable in:
+		.LFB0:
+			movl	lower(%rip), %eax
+			movl	%eax, -4(%rbp)
+	Das schiebt lower in das eax register und dann das eax register
+	auf den Stack (4 byte => -4).
+	Das UPPER is geworden zu:
+		cmpl	$14, -4(%rbp)
+	Es ist also nur noch 14 statt 15, weshalb jle darunter wahrscheinlich dem <= und nicht
+	einfach nur < entspricht.
+
+	i = lower:
+		movl	lower(%rip), %eax
+		movl	%eax, -4(%rbp)
+	Das weißt lower auf Register eax und speichert es im Stack wo "i" liegt.
+	sum += i:
+		addl	$1, -4(%rbp)
+	Das erhöht i um 1 ($1). i liegt auf dem Stack, deshalb rbp => stack base pointer register
+	i < UPPER:
+		cmpl	$14, -4(%rbp)
+		jle	.L3
+	Das vergleicht i (-4 %rbp) mit 14. Danach wird nach L3 gejumped, wenn der i kleiner gleich
+	$14 war (jle = jump lower or equal) oder nichts gemacht, falls nicht.
+
+	Schleifenablauf:
+		Zuerst wird i initialisiert, dann wird über den Schleifeninhalt gesprungen bis
+		darunter zum "Schleifenkopf", welcher die Bedingung auswertet. Trifft die
+		Bedingung zu, wird wieder hoch gesprungen zum Schleifeninhalt, welcher nun
+		ausgeführt wird bis er wieder beim Schleifenkopf ist.
+		Erst wenn die Bedingung nicht mehr zutrifft, macht der Schleifenkopf nichts
+		und die darauffolgenden Befehle werden ausgeführt.
+		Der Schleifenkopf ist also eher ein Schleifenende hier.
+		Die Fußgesteuerte Schleife hat gegenüber der Kopfgesteuerten den Vorteil, dass
+		sich mit ihr alle Schleifentypen gleich implementieren lassen. Eine Kopfgesteuerte
+		Schleife ist eine Fußgesteuerte Schleife mit einem jump vor der Schleife. Der
+		Schleifeninhalt mit breaks, continues oder ähnlichem kann hier unabhängig
+		vom Schleifentyp gleich gelassen werden. Egal ob while(), for(), do-until etc.
+
+	Optimierter Assembler Code:
+		main:
+		.LFB0:
+			.cfi_startproc
+			movl	sum(%rip), %eax
+			addl	$39, %eax
+			movl	%eax, sum(%rip)
+			ret
+	Die Schleife wurde hier bereits ausgerechnet und das Ergebnis 39 wird
+	direct in die Variable "sum" geschrieben und zurückgegeben. Da die Schleife
+	im C code statisch ist und unabhängig vom Input, hat der Optimizer hier direkt
+	das Ergebnis der Schleife in den Code integriert und die Schleife weggelassen.
+
+	Disassemblierter Code:
+		  4004a3:       8b 05 cf 03 20 00       mov    0x2003cf(%rip),%eax        # 600878 <sum>
+		  4004a9:       03 45 fc                add    -0x4(%rbp),%eax
+		  4004ac:       89 05 c6 03 20 00       mov    %eax,0x2003c6(%rip)        # 600878 <sum>
+		Dieser Code läd "sum" in eax, addiert i vom stack darauf und schreibt sum
+		zurück in Ram. Insgesamt werden 15 Byte für das Addieren der zwei Zahlen gebraucht.
+			mov: 6 byte
+			add: 3 byte
+
+Aufgabe 9:
+	x3      x2      x1      x0       _________________________ P
+	\       |       |       |       |     |      |   |   |
+	 \      |       |      /        |     |      |   |   |
+	  \     |       |     /     y3  | y2  | y1  /    |   |
+	   \    |       |    /       |  |  |  |  | /  y0 |   |
+	    \   |       |   /        |  |  |  |  =1   |  |   |
+	     \  |       |  /         |  |  \ /   /    | /    |
+	      \ \       | /           =1    =1  /     =1     |
+	       \ \     / /            |     |  /  ____/      |
+	        \ \   /  |            |    /  /  /           |
+	        |  \  |  |            |   /  /  /            |
+	 -------a3 a2 a1 a0 --------- b3 b2 b1 b0 -----      |
+	 |                                            |      /
+	 |                     SUM                    c-in--/
+	 |                                            |
+	 ------------s3 s2 s1 s0 ----------------------
+	             |  |  |  |
+	             z3 z2 z1 z0
