@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="author" content="David Herrmann">
+    <title>Grundlagen Internet-Technologien - &Uuml;bung 17</title>
+    <link rel="stylesheet" type="text/css" href="css/uebung17.css"> 
+    <script type="text/javascript">
+      var n = 13;
+      var even = false;
+      if (n % 2 == 0)
+        even = true;
+
+      function isOdd(n)
+      {
+        if (typeof(n) != "number")
+          alert("isOdd called with NaN: " + n);
+        return n % 2 == 1;
+      }
+      function isEven(n)
+      {
+        return !isOdd(n);
+      }
+    </script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      <!--
+      document.write(n + ' is even: ' + even + '<br>');
+      document.write(n + ' is odd: ' + isOdd(n) + '<br>');
+      //-->
+    </script>
+    <div>
+      <script type="text/javascript">
+        <!--
+        document.write('<table>');
+        for (i = 0; i < n; ++i) {
+          document.write('<tr>');
+          for (k = 0; k < n; ++k) {
+            document.write('<td>*<\/td>');
+          }
+          document.write('<\/tr>');
+        }
+        document.write('<\/table>');
+        //-->
+      </script>
+    </div>
+  </body>
+</html>
