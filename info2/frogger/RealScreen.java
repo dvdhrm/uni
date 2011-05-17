@@ -4,65 +4,72 @@ import colors.*;
 import java.awt.*;
 
 // Real screen that draws to a canvas
-public class RealScreen implements IScreen {
+public class RealScreen extends AScreen {
     // Canvas that we draw to
     private draw.Canvas canvas;
-    // Size of the canvas
-    private Posn size;
 
     public RealScreen(draw.Canvas canvas, Posn size)
     {
+        super(new Posn(0, 0), size);
         this.canvas = canvas;
-        this.size = size;
     }
 
-    // Returns the box relative to the parent that is this screen
-    public Box getBox()
-    {
-        // We have no parent so we occupy the whole parent
-        return new Box();
-    }
-
-    // Move box relative to parent
-    public IScreen move(double x, double y)
-    {
-        // Do nothing, we have no parent
-        return this;
-    }
-
-    // Return absolute size of owner-canvas
+    // Return absolute size/position of our screen
     public Posn getSize()
     {
         return this.size;
     }
 
-    // Round value to int
-    public int round(double d)
+    public Posn getPos()
     {
-        return (int)Math.round(d);
+        return this.pos;
     }
 
-    // Draw rectangle to canvas
-    // First convert relative Coord arguments into our
-    // absolute coordinate system.
-    public boolean drawRect(Box box, Color col)
+    // Move screen relative to parent
+    public IScreen moveTo(int x, int y)
     {
-        Posn asize = box.size.abs(this.size);
-        return this.canvas.drawRect(box.pos.abs(this.size), asize.x, asize.y, col.toAWT());
+        // Cannot move, we have no parent
+        return this;
     }
 
-    public boolean drawCircle(Coord center, double xradius, Color col)
+    public IScreen move(int x, int y)
     {
-        return this.canvas.drawCircle(center.abs(this.size), round(xradius * this.size.x), col.toAWT());
+        return moveTo(x, y);
     }
 
-    public boolean drawDisk(Coord center, double xradius, Color col)
+    public IScreen limitedMove(int x, int y)
     {
-        return this.canvas.drawDisk(center.abs(this.size), round(xradius * this.size.x), col.toAWT());
+        return moveTo(x, y);
     }
 
-    public boolean drawLine(Coord pos, Coord dest, Color col)
+    public IScreen moveRound(int x, int y)
     {
-        return this.canvas.drawLine(pos.abs(this.size), dest.abs(this.size), col.toAWT());
+        return moveTo(x, y);
+    }
+
+    // Draw rectangle
+    public boolean drawRect(Posn pos, Posn size, Color col)
+    {
+        return this.canvas.drawRect(pos, size.x, size.y, col.toAWT());
+    }
+
+    public boolean drawCircle(Posn pos, int radius, Color col)
+    {
+        return this.canvas.drawCircle(pos, radius, col.toAWT());
+    }
+
+    public boolean drawDisk(Posn pos, int radius, Color col)
+    {
+        return this.canvas.drawDisk(pos, radius, col.toAWT());
+    }
+
+    public boolean drawLine(Posn pos, Posn dest, Color col)
+    {
+        return this.canvas.drawLine(pos, dest, col.toAWT());
+    }
+
+    public boolean drawString(Posn pos, String str)
+    {
+        return this.canvas.drawString(pos, str);
     }
 }

@@ -1,17 +1,28 @@
-// Kurzbeschreibung
+import geometry.*;
+
+// Frog
 public class Frog extends ASolid {
-    public Frog(IScreen screen)
+    // number of ticks since kill (0 if alive)
+    int locked;
+    // true if dead
+    boolean dead;
+
+    public Frog(IScreen screen, int locked, boolean dead)
     {
         super(screen);
+        this.locked = locked;
+        this.dead = dead;
     }
 
-    // Draw this object
-    public boolean draw()
+    public Frog(IScreen screen)
+    {
+        this(screen, 0, false);
+    }
+
+    // Draw frog
+    public boolean drawFrog()
     {
         boolean ret = true;
-
-        // Background
-        //ret = ret && this.screen.drawRect(new Box(), new Color(200));
 
         // Jewels
         ret = ret && this.screen.drawLine(new Coord(0.5, 0.6), new Coord(0.3, 0.1), new Color(255, 255, 0));
@@ -70,13 +81,47 @@ public class Frog extends ASolid {
         return ret;
     }
 
-    // Returns true if this element doesn't allow the
-    // frog to be at its position.
-    // A frog ALWAYS blocks another frog. Two frogs can't
-    // be at the same position.
-    public boolean blocks(Frog frog)
+    // Draw this object
+    public boolean draw()
     {
-        return overlaps(frog);
+        // Of frog is locked it blinks
+        if (isLocked() && (this.locked / 10 % 2) == 0) {
+            return true;
+        }
+        else
+            return drawFrog();
+    }
+
+    // Move frog into direction
+    private Posn moveDir(Direction dir)
+    {
+        Posn size = this.screen.getSize();
+        int x = 0;
+        int y = 0;
+
+        if (!isLocked()) {
+            if (dir == Direction.UP)
+                y = -size.y;
+            else if (dir == Direction.DOWN)
+                y = size.y;
+            else if (dir == Direction.LEFT)
+                x = -size.x;
+            else
+                x = size.x;
+        }
+        return new Posn(x, y);
+    }
+
+    // Move this frog instead of creating new moved frog
+    public void moveThis(Direction dir)
+    {
+        Posn len = moveDir(dir);
+        this.screen = this.screen.limitedMove(len.x, len.y);
+    }
+
+    public void moveThis(int x, int y)
+    {
+        this.screen = this.screen.limitedMove(x, y);
     }
 
     // Move frog
@@ -85,18 +130,49 @@ public class Frog extends ASolid {
     // other elements, so check after calling this.
     public Frog move(Direction dir)
     {
-        double x = 0;
-        double y = 0;
+        Posn len = moveDir(dir);
+        return new Frog(this.screen.limitedMove(len.x, len.y), this.locked, this.dead);
+    }
 
-        if (dir == Direction.UP)
-            y = -this.screen.getBox().size.y;
-        else if (dir == Direction.DOWN)
-            y = this.screen.getBox().size.y;
-        else if (dir == Direction.LEFT)
-            x = -this.screen.getBox().size.x;
-        else
-            x = this.screen.getBox().size.x;
+    // Returns true if frog is locked
+    private boolean isLocked()
+    {
+        return this.locked != 0;
+    }
 
-        return new Frog(this.screen.move(x, y));
+    // Returns true if the frog got killed
+    public boolean isDead()
+    {
+        return this.dead;
+    }
+
+    // Lock frog
+    public void lock()
+    {
+        if (!isLocked())
+            this.locked = 1;
+    }
+
+    // Kill frog
+    public void kill()
+    {
+        this.dead = true;
+        lock();
+    }
+
+    // Returns true if the frog shall be resetted
+    public boolean needsReset()
+    {
+        if (this.locked > 50)
+            return true;
+        return false;
+    }
+
+    // Reacts on ticks
+    public Frog onTick(Frog frog)
+    {
+        if (isLocked())
+            this.locked += 1;
+        return this;
     }
 }

@@ -44,9 +44,34 @@ public class Coord {
         return new Coord(Coord.trim(this.x - other.x), Coord.trim(this.y - other.y));
     }
 
-    // Creates an absolute coordinate depending on the given border
-    public Posn abs(Posn size)
+    // Returns absolute x position for absolute scale d
+    private int absX(int d)
     {
-        return new Posn((int)Math.round(size.x * this.x), (int)Math.round(size.y * this.y));
+        return (int)(this.x * d);
+    }
+
+    // Returns absolute y position for absolute scale d
+    private int absY(int d)
+    {
+        return (int)(this.y * d);
+    }
+
+    // Creates an absolute coordinate depending on the given border
+    public Posn absSize(Posn size)
+    {
+        return new Posn(absX(size.x), absY(size.y));
+    }
+
+    // Creates an absolute coordinate depending on the given border
+    public Posn absPos(Posn size)
+    {
+        Posn pos = absSize(size);
+        int x = pos.x;
+        int y = pos.y;
+        if (pos.x >= size.x)
+            x = size.x - 1;
+        if (pos.y >= size.y)
+            y = size.y - 1;
+        return new Posn(x, y);
     }
 }

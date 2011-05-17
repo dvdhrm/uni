@@ -1,87 +1,105 @@
 import geometry.*;
 
 // Subscreen of a parent screen
-public class SubScreen implements IScreen {
+public class SubScreen extends AScreen {
     // Parent screen
-    // The grand-grand-....-grand-grand-parent is
-    // always a RealScreen, otherwise this screen
-    // would be undrawable.
     IScreen parent;
-    // Our screen as box relative of parent, that is, this is a
-    // box inside the parent which specifies our screen. Drawing
-    // to this screen is always done relative to this box and
-    // always inside this box. We can't draw beyond this box.
-    Box box;
 
-    public SubScreen(IScreen parent, Box box)
+    public SubScreen(IScreen parent, Posn pos, Posn size)
     {
+        super(pos, size);
         this.parent = parent;
-        this.box = box;
     }
 
-    // Convert a relative size to an absolute size seen by the parent
-    private Coord toParentSize(Coord size)
+    // Convert position inside this screen into position inside parent screen
+    private Posn posToParent(Posn pos)
     {
-        return new Coord(this.box.size.x * size.x, this.box.size.y * size.y);
+        return new Posn(this.pos.x + pos.x, this.pos.y + pos.y);
     }
 
-    // Convert a relative position to an absolute position seen by the parent
-    private Coord toParentPos(Coord pos)
-    {
-        return this.box.pos.add(toParentSize(pos));
-    }
-
-    // Convert a relative box to an absolute box seen by the parent
-    private Box toParentBox(Box box)
-    {
-        return new Box(toParentPos(box.pos), toParentSize(box.size));
-    }
-
-    // Returns the absolute box seen by the parent which is our screen
-    public Box getBox()
-    {
-        return this.box;
-    }
-
-    // Move box relative to parent
-    public IScreen move(double x, double y)
-    {
-        if (this.box.pos.x + this.box.size.x + x > 1.0)
-            return this;
-        if (this.box.pos.y + this.box.size.y + y > 1.0)
-            return this;
-        else
-            return new SubScreen(parent, new Box(new Coord(this.box.pos.x + x, this.box.pos.y + y), this.box.size));
-    }
-
-    // Return absolute size of owner-canvas
+    // Return absolute size/position of our screen
     public Posn getSize()
     {
-        return this.parent.getSize();
+        return this.size;
     }
 
-    // Draw rectangle to our screen
-    public boolean drawRect(Box box, Color col)
+    public Posn getPos()
     {
-        return this.parent.drawRect(toParentBox(box), col);
+        Posn pPos = this.parent.getPos();
+        return new Posn(pPos.x + this.pos.x, pPos.y + this.pos.y);
     }
 
-    public boolean drawCircle(Coord center, double xradius, Color col)
+    // Move screen relative to parent
+    public IScreen moveTo(int x, int y)
     {
-        // Since we can't scale the y-axis of our circle, this may draw beyond the
-        // screen of the element that called this, but we ignore this here. We'd need
-        // a function that can draw an ellipsis to fix this, but there ain't one.
-        return this.parent.drawCircle(toParentPos(center), xradius * this.box.size.x, col);
+        return new SubScreen(this.parent, new Posn(x, y), this.size);
     }
 
-    public boolean drawDisk(Coord center, double xradius, Color col)
+    // Move element in relative space to parent
+    public IScreen move(int x, int y)
     {
-        // Same problem as above
-        return this.parent.drawDisk(toParentPos(center), xradius * this.box.size.x, col);
+        return moveTo(this.pos.x + x, this.pos.y + y);
     }
 
-    public boolean drawLine(Coord pos, Coord dest, Color col)
+    // Move element only if it fits into the parent
+    public IScreen limitedMove(int x, int y)
     {
-        return this.parent.drawLine(toParentPos(pos), toParentPos(dest), col);
+        Posn psize = this.parent.getSize();
+        int tx = this.pos.x + x;
+        int ty = this.pos.y + y;
+
+        if (tx < 0)
+            tx = 0;
+        else if (tx + this.size.x > psize.x)
+            tx = psize.x - this.size.x;
+        if (ty < 0)
+            ty = 0;
+        else if (ty + this.size.y > psize.y)
+            ty = psize.y - this.size.y;
+        return moveTo(tx, ty);
+    }
+
+    // Move element around parent screen
+    public IScreen moveRound(int x, int y)
+    {
+        Posn psize = this.parent.getSize();
+        int tx = this.pos.x + (x % psize.x);
+        int ty = this.pos.y + (y % psize.y);
+
+        if (tx > psize.x)
+            tx = -this.size.x + tx - psize.x;
+        if (tx + this.size.x < 0)
+            tx = psize.x + (tx + this.size.x);
+        if (ty > psize.y)
+            ty = -this.size.y + ty - psize.y;
+        if (ty + this.size.y < 0)
+            ty = psize.y + (ty + this.size.y);
+        return moveTo(tx, ty);
+    }
+
+    // Forward drawings to parent
+    public boolean drawRect(Posn pos, Posn size, Color col)
+    {
+        return this.parent.drawRect(posToParent(pos), size, col);
+    }
+
+    public boolean drawCircle(Posn pos, int radius, Color col)
+    {
+        return this.parent.drawCircle(posToParent(pos), radius, col);
+    }
+
+    public boolean drawDisk(Posn pos, int radius, Color col)
+    {
+        return this.parent.drawDisk(posToParent(pos), radius, col);
+    }
+
+    public boolean drawLine(Posn pos, Posn dest, Color col)
+    {
+        return this.parent.drawLine(posToParent(pos), posToParent(dest), col);
+    }
+
+    public boolean drawString(Posn pos, String str)
+    {
+        return this.parent.drawString(posToParent(pos), str);
     }
 }

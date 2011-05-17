@@ -5,7 +5,7 @@ public class EmptySolidList extends ASolid implements ISolidList {
         super(screen);
     }
 
-    // Push element to the top of the list and return new list
+    // Push element (This is only compatible with SolidListEntry, yet)
     public ISolidList push(ISolid ele)
     {
         return new SolidListEntry(ele, this);
@@ -21,5 +21,11 @@ public class EmptySolidList extends ASolid implements ISolidList {
     public boolean overlaps(IDrawable other)
     {
         return false;
+    }
+
+    // React on time event
+    public ISolidList onTick(Frog frog)
+    {
+        return this;
     }
 }
