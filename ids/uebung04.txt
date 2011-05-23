@@ -1,0 +1,179 @@
+IDS - Uebung 4 - David Herrmann
+
+
+Aufgabe 10:
+	Abhängigkeiten enstehen, wenn zwei Befehle voneinander abhängen, also
+	etwas anderes bewirken abhängig davon, ob/wie der erste Befehl
+	ausgeführt wird.
+	Ein Konflikt basiert immer auf einer Abhängigkeit, tritt aber nicht
+	bei jeder Abhängigkeit auf. Konflikte enstehen nur, wenn die
+	Abhängigkeit bei der Ausführung auf dem jeweiligen Prozessor eine
+	zeitabhängige Auswirkung hat. Das heißt, wenn der zweite Befehl bereits
+	ausgeführt wird, obwohl der erste Befehl noch nicht beendet ist oder
+	die Nachwirkung des ersten Befehls noch nicht vollständig eingetreten
+	ist.
+
+
+		lw r1 , 0x1000 (r0)
+		lw r2 , 0x1004 (r0)
+	loop:
+		beqz r1, end
+		slt r3, r1, r2
+		bnez r3, branch
+		sub r3, r1, r2
+		add r1, r2, r0
+		add r2, r3, r0
+		j loop
+	branch:
+		sub r3, r2, r1
+		add r2, r1, r0
+		add r1, r3, r0
+		j loop
+	end:
+		sw 0x1008 (r0), r2
+
+	Die Befehle:
+		slt r3, r1, r2
+		bnez r3, branch
+	sind direkt steuerabhängig von
+		loop:
+			beqz r1, end
+
+	Die Befehle:
+		sub r3, r1, r2
+		add r1, r2, r0
+		add r2, r3, r0
+		j loop
+	sind direkt steuerabhängig von
+		bnez r3, branch
+
+	Die Befehle:
+		branch:
+			sub r3, r2, r1
+			add r2, r1, r0
+			add r1, r3, r0
+			j loop
+	sind direkt steuerabhängig vom ersten Auftreten von:
+		j loop
+
+	Der Befehl:
+		end:
+			sw 0x1008 (r0), r2
+	ist direkt steuerabhängig vom zweiten Auftreten von:
+		j loop
+
+
+		lw r1, 0x1000 (r0)
+		add r2, r1, r0
+		addi r3, r0, 1
+	loop:
+		beqz r2, end
+		add r4, r3, r0
+		multu r3, r2, r4
+		subi r2, r2, 1
+		j loop
+	end:
+		sw 0x1004 (r0), r3
+
+	Datenabhängigkeiten über r3:
+		add r4, r3, r0
+		ist echt datenabhängig von:
+			addi r3, r0, 1
+		und echt datenabhängig von:
+			multu r3, r2, r4
+
+		multu r3, r2, r4
+		ist ausgabe-datenabhängig von:
+			addi r3, r0, 1
+		und gegen-datenabhängig von:
+			add r4, r3, r0
+		und ausgabe-datenabhängig von (sich selbst):
+			multu r3, r2, r4
+
+		sw 0x1004 (r0), r3
+		ist echt datenabhängig von:
+			addi r3, r0, 1
+		und echt datenabhängig von:
+			multu r3, r2, r4
+
+
+Aufgabe 11:
+	5 - 3 = 5 + (-3) = 2
+		  0101
+		+ 1101
+		 11010 (carry-out bit wird ignoriert)
+		------
+		  0010 = 2
+
+	3 - 5 = 3 + (-5) = -2
+		  0011
+		+ 1011
+		  0110
+		------
+		  1110 = -2
+
+
+Aufgabe 12:
+	lw r1, 0x1000 (r0)
+	lw r2, 0x1004 (r0)
+	add r3, r1, r2
+	sub r4, r1, r2
+	sw 0x100c (r0), r4
+	sw 0x1008 (r0), r3
+	addi r5, r0, 0x10
+	sub r6, r0, r5
+	sw 0x2000 (r1), r5
+	sw 0x2000 (r2), r6
+
+	                    |                       Takt                       |
+	    Instruktion     |01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|
+	--------------------+--------------------------------------------------+
+	lw r1, 0x1000 (r0)  |IF ID EX ME WB                                    |
+	lw r2, 0x1004 (r0)  |   IF ID EX ME WB                                 |
+	add r3, r1, r2      |      IF ID       EX ME WB                        |
+	sub r4, r1, r2      |         IF       ID EX ME WB                     |
+	sw 0x100c (r0), r4  |                  IF ID       EX ME WB            |
+	sw 0x1008 (r0), r3  |                     IF       ID EX ME WB         |
+	addi r5, r0, 0x10   |                              IF ID EX ME WB      |
+	sub r6, r0, r5      |                                 IF ID       EX ME|
+	sw 0x2000 (r1), r5  |                                    IF       ID EX|
+	sw 0x2000 (r2), r6  |                                             IF ID|
+	--------------------+--------------------------------------------------|
+
+	                    |                       Takt                       |
+	    Instruktion     |05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|
+	--------------------+--------------------------------------------------+
+	lw r1, 0x1000 (r0)  |WB                                                |
+	lw r2, 0x1004 (r0)  |ME WB                                             |
+	add r3, r1, r2      |      EX ME WB                                    |
+	sub r4, r1, r2      |      ID EX ME WB                                 |
+	sw 0x100c (r0), r4  |      IF ID       EX ME WB                        |
+	sw 0x1008 (r0), r3  |         IF       ID EX ME WB                     |
+	addi r5, r0, 0x10   |                  IF ID EX ME WB                  |
+	sub r6, r0, r5      |                     IF ID       EX ME WB         |
+	sw 0x2000 (r1), r5  |                        IF       ID EX ME WB      |
+	sw 0x2000 (r2), r6  |                                 IF ID    EX ME WB|
+	--------------------+--------------------------------------------------|
+
+	In einer Tabelle:
+	                    |                             Takt                             |
+	    Instruktion     |01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|
+	--------------------+--------------------------------------------------------------+
+	lw r1, 0x1000 (r0)  |IF ID EX ME WB                                                |
+	lw r2, 0x1004 (r0)  |   IF ID EX ME WB                                             |
+	add r3, r1, r2      |      IF ID       EX ME WB                                    |
+	sub r4, r1, r2      |         IF       ID EX ME WB                                 |
+	sw 0x100c (r0), r4  |                  IF ID       EX ME WB                        |
+	sw 0x1008 (r0), r3  |                     IF       ID EX ME WB                     |
+	addi r5, r0, 0x10   |                              IF ID EX ME WB                  |
+	sub r6, r0, r5      |                                 IF ID       EX ME WB         |
+	sw 0x2000 (r1), r5  |                                    IF       ID EX ME WB      |
+	sw 0x2000 (r2), r6  |                                             IF ID    EX ME WB|
+	--------------------+--------------------------------------------------------------|
+
+	Die Pipeline wird um 7 Takte verzögert. Optimum wären 10 + 4 = 14 Takte
+	Das Programm besteht aus 10 Assemblerinstruktionen. Ohne Pipeline, also
+	mit exakt 5 Takten pro Instruktion, hätte das Programm 50 Takte
+	gebraucht. Mit Pipeline braucht das Programm gerade einmal 21 Takte. Das
+	ist knapp mehr als die doppelte Geschwindigkeit, also eine
+	Beschleunigung von etwa: 0.015 I/T/T also um 0.3 I/T schneller.
