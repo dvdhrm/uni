@@ -1,0 +1,24 @@
+body {
+	color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	background-color: #005588;
+	background-image: url(./../pics/background.png);
+	background-repeat: repeat-y;
+}
+
+h1, h2 {
+	text-align: center;
+}
+
+#main {
+	width: 50%;
+}
+
+.example {
+	margin: 15% 10% 0% 15%;
+	padding: 1em;
+	background-color: #ffffbb;
+	color: #222;
+	border: 2px solid #222;
+	text-align: left;
+}
