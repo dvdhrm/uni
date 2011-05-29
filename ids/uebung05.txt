@@ -1,0 +1,200 @@
+IDS - Uebung 5 - David Herrmann
+
+
+Aufgabe 13:
+	Die CPU ist verantwortlich für die Programmausführung. Dazu ist eine
+	CPU mit dem Hauptspeicher über einen Adressbus und einen
+	Datenbus verbunden. Über den Adressbus sendet sie Adressen, von denen
+	sie lesen oder schreiben will und über den Datenbus erhält/sendet sie
+	die zugehörigen Daten.
+	Diese Busse werden auf jeden Fall benutzt um den aktuell auszuführenden
+	Code zu erhalten. Dazu besitzt die CPU einen internen Counter, der
+	Programmzähler, der die Position des aktuellen Befehls angibt. Nach der
+	Ausführung jedes Befehls, wird dieser Counter um die Befehlsgröße inkrementiert.
+	Bei Sprüngen wird der Counter dem Sprung entsprechend angepasst.
+	Interne Daten der CPU liegen in Registern. Das sind schnelle Speicher
+	in der CPU. In ihnen speichert die CPU alle Daten, die sie für den
+	aktuell auszuführenden Befehl braucht und ggf. natürlich auch Werte, die
+	für darauf folgende Befehle interessant sind. Der Programmzähler ist
+	eines dieser Register.
+	Wenn die CPU einen Befehl ausführen soll, läd sie diesen zuerst aus dem
+	Speicher in ein internes Register. Nun dekodiert sie den Befehl, läd
+	alle zugehörigen Parameter in die entsprechenden Register und führt den
+	Befehl aus. Die Dekodierung des Befehls und die vorbereitung für die
+	Ausführung erledigt das Steuerwerk. Einfache, nicht mathematische
+	Befehle wie Sprünge kann sie direkt ausführen (ggf. mit HilfsALUs für
+	Anpassungen des Programmzählers oä.). Nachdem Dekodieren des Befehls
+	leitet das Steuerwerk den Befehl an die zuständige ALU weiter. Es
+	können verschiedenste ALUs für unterschiedliche arithmetische
+	Berechnungen existieren. Die jeweilige ALU bekommt die Parameter und
+	den Befehl, führt die Berechnung aus und leitet das Ergebnis zurück
+	in ein Register.
+
+Aufgabe 14:
+	Original Code:
+		lw r1, 0x1000 (r0)
+		lw r2, 0x1004 (r0)
+		add r3, r1, r2
+		sub r4, r1, r2
+		sw 0x100c (r0), r4
+		sw 0x1008 (r0), r3
+		addi r5, r0, 0x10
+		sub r6, r0, r5
+		sw 0x2000 (r1), r5
+		sw 0x2000 (r2), r6
+
+	+--------------------+-----------------------------------------+
+	|                    |                    Takt                 |
+	|    Instruktion     |01|02|03|04|05|06|07|08|09|10|11|12|13|14|
+	+--------------------+-----------------------------------------+
+	|addi r5, r0, 0x10   |IF ID EX ME WB                           |
+	|lw r1, 0x1000 (r0)  |   IF ID EX ME WB                        |
+	|lw r2, 0x1004 (r0)  |      IF ID EX ME WB                     |
+	|sub r6, r0, r5      |         IF ID EX ME WB                  |
+	|sw 0x2000 (r1), r5  |            IF ID EX ME WB               |
+	|add r3, r1, r2      |               IF ID EX ME WB            |
+	|sub r4, r1, r2      |                  IF ID EX ME WB         |
+	|sw 0x2000 (r2), r6  |                     IF ID EX ME WB      |
+	|sw 0x1008 (r0), r3  |                        IF ID EX ME WB   |
+	|sw 0x100c (r0), r4  |                           IF ID EX ME WB|
+	+--------------------+-----------------------------------------+
+
+	Die Pipeline muss gar nicht verzögert werden. Es ist die maximale
+	Beschleunigung von: 50 / 14 ~= 3.571
+
+Aufgabe 15:
+	Nach Abarbeitung aller Befehl beinhaltet meine Statistik KEIN
+	Zurückschreiben der restlichen DIRTY blocks im cache, da dies nicht
+	verlangt wurde und so keine Information verloren geht.
+
+	hits und misses wurden NUR für READ Befehle berechnet, da es bei
+	WRITE Befehlen ja keinen Sinn macht.
+
+	Die Bonus Aufgabe liest teilweise von uninitialisiertem Memory. Diese
+	Daten werden automatisch auf 0 gesetzt, das hat aber ja keinen Einfluss
+	auf die Cache-Statistik.
+
+	Unbenutzer Memory wird nicht angezeigt.
+
+	Directly mapped - cache size 4:
+		Cache dump:
+			#0: 12 => 460
+			#1: 17 => 424
+			#2: 6 => 784 (dirty)
+			#3: 11 => 784 (dirty)
+		Memory dump:
+			0 => 2 (cached)
+			1 => 17
+			12 => 460
+			17 => 424
+			57 => 100
+		Cache hits: 5
+		Cache misses: 9
+		Cache yields: 9
+
+	Fully associated - least recently used - cache size 4:
+		Cache dump:
+			#0: 12 => 460
+			#1: 0 => 2 (dirty)
+			#2: 17 => 424
+			#3: 1 => 17 (dirty)
+		Memory dump:
+			0 => 0 (cached)
+			6 => 784
+			11 => 784
+			12 => 460 (cached)
+			17 => 424 (cached)
+			57 => 100
+		Cache hits: 5
+		Cache misses: 9
+		Cache yields: 7
+
+	Bonus - directly mapped - cache size 8:
+		Cache dump:
+			#0: 128 => 324
+			#1: 1 => 130 (dirty)
+			#2: 130 => 0
+			#3: 83 => 529 (dirty)
+			#4: 116 => 352 (dirty)
+			#5: 125 => 325 (dirty)
+			#6: 0 => 0 (invalid)
+			#7: 103 => 399 (dirty)
+		Memory dump:
+			0 => 28 (cached)
+			1 => 130
+			3 => 4524
+			5 => 3745
+			9 => 3064
+			12 => 2475
+			17 => 1972
+			21 => 1549
+			25 => 1200
+			31 => 919
+			37 => 784
+			47 => 775
+			49 => 765
+			52 => 732
+			56 => 724
+			58 => 700
+			64 => 667
+			71 => 649
+			73 => 600
+			77 => 537
+			88 => 520
+			90 => 460
+			93 => 424
+			103 => 325
+			113 => 355
+			116 => 732
+			122 => 339
+			125 => 352
+			128 => 324
+			130 => 0
+		Cache hits: 92
+		Cache misses: 451
+		Cache yields: 144
+
+	Bonus - fully associated - least recently used - cache size 8:
+		Cache dump:
+			#0: 128 => 324 (dirty)
+			#1: 0 => 28 (dirty)
+			#2: 130 => 0
+			#3: 1 => 130 (dirty)
+			#4: 125 => 325 (dirty)
+			#5: 122 => 339 (dirty)
+			#6: 116 => 352 (dirty)
+			#7: 113 => 355
+		Memory dump:
+			0 => 22 (cached)
+			3 => 4524
+			5 => 3745
+			9 => 3064
+			12 => 2475
+			17 => 1972
+			21 => 1549
+			25 => 1200
+			31 => 919
+			37 => 784
+			47 => 775
+			49 => 765
+			52 => 732
+			56 => 724
+			58 => 700
+			64 => 667
+			71 => 649
+			73 => 600
+			77 => 537
+			83 => 529
+			88 => 520
+			90 => 460
+			93 => 424
+			103 => 399
+			113 => 355 (cached)
+			116 => 399 (cached)
+			122 => 324 (cached)
+			125 => 352 (cached)
+			128 => 339 (cached)
+			130 => 0 (cached)
+		Cache hits: 81
+		Cache misses: 462
+		Cache yields: 67
