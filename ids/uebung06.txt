@@ -1,0 +1,88 @@
+IDS - Uebung 6 - David Herrmann
+
+
+Aufgabe 16:
+	Hitrate: rh
+	Cache access time: tc
+	Memory access time: tm
+
+	Average access time: rh * tc + (1 - rh) * tm
+	Average access time optimized: rh * tc + (1 - rh) * (tm - tc)
+
+
+	rh muss kleiner sein als (1 - rh), also mindestens 50% damit die
+	Strategie noch Sinn macht, da:
+	Subst:
+		rm = (1 - rh)
+	=>
+		rh * tc + (1 - rh) * (tm - tc)
+		=
+		rh * tc + rm * (tm - tc)
+	Das muss kleiner sein als rm * tm (Memory Access time), damit der Cache
+	Sinn macht:
+		rh * tc + rm * (tm - tc) < rm * tm
+		rh * tc + rm * tm - rm * tc < rm * tm    | - (rm*tm)
+		rh * tc - rm * tc < 0                    | + (rm*tc)
+		rh * tc < rm * tc                        | Subst
+		rh * tc < (1 - rh) * tc                  | / tc
+		rh < 1 - rh
+
+
+	Bei einem DM-Cache sollte man die niederwertigen Bits als Index
+	verwenden, da die meisten Adressen, die man benutzt, eng beieinander
+	liegen und oft auf dieselbe Speicherseite zeigen. Die höher-wertigen
+	Bits sind somit oft identisch und der Cache würde nicht voll ausgenutzt
+	werden. Somit sind die niederwertigen besser geeignet.
+
+
+	Eine mögliche Cache-Strategie, um die Writes in den Arbeitsspeicher zu
+	minimieren, wäre das Verhindern von Reads im Cache bei Cache-Misses.
+	Also wenn die CPU eine Adresse liest und diese nicht im Cache liegt,
+	dann werden die Daten an der Adresse zwar der CPU übergeben, aber NICHT
+	im Cache abgelegt.
+	Wenn die CPU hingegen schreibt, dann wird der Cache wie üblich verwendet
+	was dazu führt, dass jedes Datum im Cache IMMER das dirty Bit gesetzt
+	hat, da ein Eintrag ja nur in den Cache kommt, wenn geschrieben wird.
+	Da der Cache nun exklusiv für Schreibzugriffe genutzt wird, reduzieren
+	sich gleichzeitig die Schreibzugriffe auf den Hauptspeicher.
+	Die Lesezugriffe können zwar dadurch unglaublich langsam werden (vor-
+	allem bei read-only variablen / Konstanten), aber das war ja nicht
+	gefragt.
+
+Aufgabe 17:
+	USB-2.0 max 60MB/s.
+	FullHD 1080p: 1920 x 1080 ~= 2.000.000
+	24Bit pro Bildpunkt: 2.000.000 * 24Bit = 48.000.000Bit = 48 MB
+	Es kann also ca. 1.5 Bilder pro Sekunde übertragen werden, was
+	einer Bildwiederholfrequenz von fast 1.5 Frames entspricht.
+
+	Grafische Oberflächen über remote sind trotzdem möglich, da verschiedene
+	Techniken zur Bandbreitenreduktion eingesetzt werden. Zum Beispiel hat
+	das X-Window System dedizierte Bereiche auf dem Screen (Windows), die
+	einzeln gezeichnet werden. Es muss somit nur der Teil übertragen werden,
+	der auch geändert wird und nicht immer der ganze Screen.
+	Dazu existiert eine ZeichenAPI, welche es ermöglicht, nicht immer ganze
+	Pixelbereiche zu übertragen, sondern eine Vektor-ähnliche Darstellung
+	mit der sich ein Bild nachzeichnen lässt.
+	Und zu guter Letzt werden natürlich auch noch Kompressionsmethoden
+	benutzt, die Frames werden heruntergedreht und die Farbpalette kann
+	reduziert werden.
+
+	Ein großer LKW hat eine Ladefläche von 60Tonnen.
+	Gewicht Festplatte mit 1TB Speicherplatz: 600g
+	60 Tonnen = 60.000.000g
+	Auf den LKW passen 60.000.000g / 600g = 600.000 Festplatten
+	Tübingen nach Hamburg: 700km Strecke
+	LKW fährt max 80km/h
+	LKW braucht 8,75 Stunden ~= 9h
+	Es wird also eine Bandbreite von 600.000 TB pro 9h erreicht.
+	Das sind: 600.000 / 9 / 3600 = 0.01851852 TB pro sekunde
+	Das macht: 19GB/s ~= 100 Gbit/s
+
+	Datenrate Internet (Upload): 0.5 mbit/s
+	Zeit von mir zur Uni: 20min
+	0.5 mbit/s entspricht: 0.5 * 60 * 20 = 600 mbit pro 20min
+	Das Kopieren von 600 Mbit (~100MB) über USB dauert 2Sekunden, was
+	deutlich in meiner Toleranz der Fahrtzeit liegt.
+	Wenn ich also mehr als 600 mbit ~= 100MB habe, lohnt es sich zu Fuß
+	zu gehen.
