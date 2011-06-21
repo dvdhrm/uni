@@ -1,0 +1,97 @@
+IDS - Uebung 7 - David Herrmann
+
+
+Aufgabe 18:
+	CSMA steht für Carrier Sense Multiple Access.
+	Die Erweiterung CD steht für Collision Detection und CA steht für
+	Collision Avoidance.
+
+	Beim CSMA/CD Verfahren wird die Leitung die ganze Zeit mitgelesen. Wenn
+	man etwas senden will, wartet man so lange, bis die Leitung frei ist.
+	Dann sendet man seine Daten und liest diese auch gleichzeitig wieder
+	mit. Wenn man etwas anderes liest als man sendet, fand eine Collision
+	statt und die Übertragung wird abgebrochen und ein Störsignal gesendet,
+	sodass alle anderen Teilnehmer die Collision auch mitbekommen.
+	Wenn man dasselbe liest, wie man sendet, dann fand keine Collision statt
+	und die Daten wurden erfolgreich übertragen.
+	Um eine Übertragung zu wiederholen, wartet man einen bestimmten Zeitraum
+	abhängig von der Anzahl an Kollisionen und sendet dann erneut.
+
+	Bei WLan macht das CSMA/CD Verfahren keinen Sinn, da man hier
+	simultan die Leitung lesen und schreiben können muss. Viele WLan
+	Adapter haben jedoch nur eine Antenne und können so nicht senden und
+	empfangen gleichzeitig.
+	Stattdessen wird CSMA/CA verwendet, welches Kollisionen nicht erkennen
+	kann, aber versucht zu vermeiden. Wenn man etwas senden will, schaut
+	man ob die Leitung frei ist. Wenn sie frei ist, sendet man seine Daten,
+	wenn sie jedoch nicht frei ist, wartet man eine zufällig lange
+	Zeitspanne bis man wieder sendet. Dadurch wartet man nicht durchgängig
+	bis die Leitung frei ist, sondern sendet zu einer zufälligen Zeit. Dies
+	verhindert, dass mehrere Teilnehmer sofort senden, wenn die Leitung frei
+	wird.
+
+	Die Verfahren arbeiten bei geringer und hoher Last effektiv, da die
+	Packetgröße festgeschrieben ist, sodass nicht ein Teilnehmer den Bus
+	dauerhaft belegen kann, aber es ist auch nicht so klein, dass man
+	zu viel Packetoverhead hätte.
+	Außerdem gibt es festgeschriebene Zeitspannen, die man in bestimmten
+	Momenten warten muss, bevor man wieder senden kann.
+	Trotzdem funktionieren beide Verfahren bei zu vielen Teilnehmern mit
+	zu hoher Last nicht, da dann zu viele Kollisionen auftreten.
+	Um weiter Last zu verteilen kann man zusätzliche Buse verwenden. Dazu
+	existieren Verfahren wie "Channel Hopping" im WLan bereich um
+	unterschiedliche Frequenzen zu benutzen.
+
+	Im CSMA/CD Netz wird, nachdem eine Collision erkannt wurde, eine
+	zufällige Zeitspanne gewartet. Wenn man diese Zeitspanne ignoriert und
+	direkt wieder sendet, hat man den Bus zu einer hohen Wahrscheinlichkeit
+	für sich allein und kann erfolgreich senden. Andere Teilnehmer werden
+	so verdrängt und am senden gehindert.
+	Wenn mehrere Teilnehmer dieses Verfahren verwenden und versuchen
+	gleichzeitig zu senden, wird keiner erfolgreich senden können und die
+	Wiederholungsversuche werden genauso fehlschlagen, was dazu führt, dass
+	sie keine Daten mehr kollisionsfrei übertragen können.
+
+Aufgabe 19:
+	Der no-write-allocate Cache kann immernoch in write-back und
+	write-though Varianten aufgeteilt werden, da bei einem Write-Hit ja
+	unabhängig von write-allocate/no-write-allocate Verfahren gehandelt
+	wird. Dieses greift ja nur bei write-misses.
+
+	Angenommen der Cache ist full-associative und hat Platz für 1 Adresse:
+	(Angnm: ein Ramzugriff ist langsamer als 2 Cache-Zugriffe!)
+	(Write-back verfahren. Kein write-though!)
+		write 0x0 10
+		read 0x0
+	Der write-allocate Cache schreibt hier 10 an 0x0 in den Cache, sodass
+	der darauffolgende read ein cache-hit wird. Beides sind also nur Cache
+	Zugriffe. Zuletzt wäre noch ein Write-back nötig, also 2 mal cache und 1
+	mal Ram.
+	Der no-write-allocate Cache würde hier beidesmal einen cache-miss haben
+	und wäre somit langsamer. Also 2 mal Ram.
+
+	Bei
+		read 0x0
+		write 0x1
+		read 0x0
+	wäre der write-allocate langsamer, denn der erste read wäre ein Miss.
+	Der zweite write würde den read von zuvor im Cache wieder verdrängen,
+	da der Cache nur 1 Feld hat. Der darauf folgende Read wäre also wieder
+	ein Miss.
+	Beim no-write-allocate Verfahren wäre der erste read ien Miss. Der
+	zweite Write wäre auch ein Miss, würde aber den Cache nicht verändern,
+	sodass der letzte read ein cache-hit wäre und somit insgesamt schneller.
+
+Aufgabe 20:
+	Am Master liegt eine Spannung von 5V an, wenn kein Sensor etwas meldet.
+	Wenn ein Sensor etwas meldet, fällt die Spannung am Master auf nahezu
+	0V ab, da der Sensor keinen Widerstand mehr leistet und der Master den
+	größeren Wiederstand darstellen wird.
+	Der Widerstand in der Schaltung ist notwendig, um Kurzschlüsse zu
+	verhindern und den Stromfluss gering zu halten, wenn ein oder mehr
+	Sensoren etwas melden. Außerdem schützt er so die sensiblen Transistoren
+	der Sensoren.
+	Der Master kann nicht unterscheiden, ob ein oder zwei oder mehr Sensoren
+	etwas melden. Wenn mindestens ein Sensor etwas meldet, fällt die
+	Spannung am Master auf nahezu 0V, was sich auch bei mehreren aktiven
+	Sensoren nicht ändert.
