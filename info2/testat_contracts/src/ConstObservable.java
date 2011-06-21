@@ -14,4 +14,9 @@ public class ConstObservable<T> implements IObservable<T>
 	{
 		return this.value;
 	}
+
+	public Time next(Time date)
+	{
+		return new Time(0);
+	}
 }

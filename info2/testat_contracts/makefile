@@ -3,7 +3,7 @@
 #
 
 # Source classes (inside src/ directory)
-SOURCES=Time IObservable ConstObservable
+SOURCES=$(basename $(notdir $(wildcard src/*.java)))
 
 # Target classes to run
 TARGETS=
@@ -31,7 +31,8 @@ CLASSPATH=tests:bin:/usr/lib/junit.jar:/usr/lib/tuebingen-test.jar:/usr/lib/test
 all:
 	@echo "Targets: compile tests run clean"
 
-compile: $(OBJS)
+compile $(OBJS): $(SRCS)
+	javac -Xlint -d bin -cp $(CLASSPATH) $(SRCS)
 
 tests: compile $(TESTOBJS)
 	java -cp $(CLASSPATH) org.junit.runner.JUnitCore $(TESTS)

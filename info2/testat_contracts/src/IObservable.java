@@ -4,4 +4,7 @@ public interface IObservable<T>
 {
 	// Return value for given date
 	public T at(Time date);
+
+	// Returns the first time after \date when the overservable changes next
+	public Time next(Time date);
 }
