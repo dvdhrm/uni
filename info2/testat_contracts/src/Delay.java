@@ -11,4 +11,12 @@ public class Delay extends AContract
 		this.contract = contract;
 		this.cond = cond;
 	}
+
+	public Position simplify(Time date)
+	{
+		if (this.cond.at(date))
+			return new Position(this.contract, date, 0);
+		else
+			return new Position(this.contract, this.cond.next(date), 0);
+	}
 }

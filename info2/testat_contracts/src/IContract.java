@@ -12,4 +12,7 @@ public interface IContract
 
 	// Scale contract
 	public IContract scale(IObservable<Double> scale);
+
+	// Simplify the contract
+	public Position simplify(Time date);
 }

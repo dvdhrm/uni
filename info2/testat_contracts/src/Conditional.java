@@ -13,4 +13,12 @@ public class Conditional extends AContract
 		this.con2 = con2;
 		this.cond = cond;
 	}
+
+	public Position simplify(Time date)
+	{
+		if (this.cond.at(date))
+			return new Position(this.con1, date, 0);
+		else
+			return new Position(this.con2, date, 0);
+	}
 }

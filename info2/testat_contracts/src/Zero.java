@@ -18,4 +18,9 @@ public class Zero extends AContract
 	{
 		return this;
 	}
+
+	public Position simplify(Time date)
+	{
+		return new Position(this, date, 0);
+	}
 }
