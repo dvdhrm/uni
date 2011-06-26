@@ -1,28 +1,33 @@
 // a single station entry in a line
-public class PairLine
+public class PairLine implements ILine
 {
 	// the station
-	String station;
+	private Station station;
 	// the rest of the line
-	ILine passed;
-	ILine ahead;
+	private ILine rest;
 
-	public PairLine(String s, ILine passed, ILine ahead)
+	public PairLine(Station station, ILine rest)
 	{
-		this.station = s;
-		this.passed = passed;
-		this.ahead = ahead;
+		this.station = station;
+		this.rest = rest;
 	}
 
-	// add new station to tail of line
-	public PairLine addTail(String name)
+	// Refresh helper
+	public ILine refresh(ILine passed)
 	{
-		return this.addTailHelper(name, new EmptyLine());
+		this.station.passed = passed;
+		ILine ahead = this.rest.refresh(new PairLine(this.station, passed));
+		this.station.ahead = ahead;
+		return new PairLine(this.station, ahead);
 	}
 
-	public PairLine addTailHelper(String s, ILine passed)
+	// Refresh line
+	public void refresh()
 	{
-		return new PairLine(this.station, this.passed, new PairLine(s
-		return new PairLine(new Station(s.name, new PairLine(name, s.ahead), s.passed), this.tail.newStation(name, new PairLine(this.s, passed)));
+		this.refresh(new EndOfLine());
 	}
+
+	// Getter
+	public Station getStation() { return this.station; }
+	public ILine getRest() { return this.rest; }
 }

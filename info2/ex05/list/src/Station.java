@@ -2,16 +2,16 @@
 public class Station
 {
 	// name of the line
-	String name;
+	public String name;
 	// the line ahead
-	ILine ahead;
-	// the passted stations (reversed)
-	ILine passed;
+	public ILine ahead;
+	// the passed stations (reversed)
+	public ILine passed;
 
-	public Station(String name, ILine ahead, ILine passed)
+	public Station(String name)
 	{
 		this.name = name;
-		this.ahead = ahead;
-		this.passed = passed;
+		this.ahead = new EndOfLine();
+		this.passed = new EndOfLine();
 	}
 }
