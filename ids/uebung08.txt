@@ -1,0 +1,139 @@
+IDS - Uebung 8 - David Herrmann
+
+Aufgabe 21:
+	D=Dieselgenerator, R=Rechner, L=Lüfter
+	Ausfallwahrscheinlichkeiten:
+		D = 5%
+		R = 1%
+		L = 20%
+	Funktionswahrscheinlichkeiten:
+		d = 1-5% = 95%
+		r = 1-1% = 99%
+		l = 1-20% = 80%
+
+	Zuferlässigkeitsblockdiagramm:
+		                           ,- L -.    
+		   ,- D -.     ,- R -.    /       \   
+		--{       }---{       }------ L ------
+		   `- D -´     `- R -´    \       /   
+		                           `- L -´    
+	Strukturformel:
+		(D or D) and (R or R) and (L or L or L)
+	Funktionswahrscheinlichkeit:
+		p(Ds) * p(Rs) * p(Ls)
+	=>
+		p(Ds) = 1 - D^2
+		p(Rs) = 1 - R^2
+		p(Ls) = 1 - L^3
+	=>
+		(1 - D^2) * (1 - R^2) * (1 - L^3)
+	=>
+		99.75%    * 99.99%    * 99.2%
+	=>
+		98.9421048%
+
+	Zuferlässigkeitsblockdiagramm:
+		                           ,- L -.    
+		   ,- D -- R -.           /       \   
+		--{            }------------- L ------
+		   `- D -- R -´           \       /   
+		                           `- L -´    
+	Funktionswahrscheinlichkeit:
+		(1 - (1 - d * r)^2) * 99.2%
+	=>
+		99.645975% * 99.2%
+	=>
+		98.8488072%
+
+	Zuferlässigkeitsblockdiagramm:
+		                 ,- L -.   ,- L -.    
+		  ,- D -- R -.  /       \ /       \   
+		-{            }---- L ------- L ------
+		  `- D -- R -´  \       / \       /   
+		                 `- L -´   `- L -´    
+	Funktionswahrscheinlichkeit:
+		99.645975% * 99.2% * 99.2%
+	=>
+		98.0580167424%
+
+Aufgabe 22:
+	Geg: Matrizen G, H und R
+	(Rechnungen wurden durch das angehängte Programm durchgeführt)
+
+	p1 = 10010010110
+	p2 = 01001011011
+
+	Encoding:
+		x1 = G * p1 = 001100110010110 = r1
+		x2 = G * p2 = 010010011011011 = r2
+	Parity-test:
+		H * r1 = 000 = 0 (check)
+		H * r2 = 000 = 0 (check)
+	Decoding:
+		R * r1 = 10010010110 = p1 (check)
+		R * r2 = 01001011011 = p2 (check)
+
+	Anhand des Ergebnises des Parity-Tests kann man erkennen welches Bit
+	falsch übertragen wurde. Wenn das Ergebnis der Nullvektor ist, ist
+	alles richtig übertragen worden. Andernfalls lässt sich das Bit so
+	errechnen:
+		H * t1 = 110
+	=>
+		Bit = 1 * 1 + 1 * 2 + 0 * 4 = 3 => Bit 3 muss geflipped werden
+	Oder ein anderes Beispiel:
+		H * t2 = 101
+	=>
+		Bit = 1 * 1 + 0 * 2 + 1 * 4 = 5 => Bit 5 muss geflipped werden
+
+	c1 = 111100010010001
+	c2 = 100010001111000
+	c3 = 111100101001111
+
+	Parity-test:
+		H * c1 => Bit 8 muss geflipped werden
+		H * c2 => Alles ok
+		H * c3 => Bit 10 muss geflipped werden
+	Uncorrected-decoding:
+		R * c1 = 10000010001
+		R * c2 = 01001111000
+		R * c3 = 10011001111
+	Corrected-decoding:
+		R * c1' = 10000010001
+		R * c2' = 01001111000
+		R * c3' = 10011101111
+	Nur c3 verändert sich durch die Error-Correction. Bei c2 war sowieso
+	nichts falsch und bei c1 war das falsch übertragene Bit ein parity bit,
+	weshalb die Veränderung egal ist.
+
+
+	Ich hab den Hamming code im beiliegenden C-Source-File implementiert.
+	Der Consolen-Output ist:
+		david@david-nb ~/dev/misc/uni/ids $ gcc -o test hamming.c -Wall && ./test
+		Ex1
+		  Data:      10010010110
+		  Enc:       001100110010110
+		  Wrong bit: 0
+		  Dec-wrong: 10010010110
+		  Dec-right: 10010010110
+		Ex2
+		  Data:      01001011011
+		  Enc:       010010011011011
+		  Wrong bit: 0
+		  Dec-wrong: 01001011011
+		  Dec-right: 01001011011
+		Ex3
+		  Enc: 111100010010001
+		  Wrong bit: 8
+		  Dec-wrong: 10000010001
+		  Dec-right: 10000010001
+		Ex4
+		  Enc: 100010001111000
+		  Wrong bit: 0
+		  Dec-wrong: 01001111000
+		  Dec-right: 01001111000
+		Ex5
+		  Enc: 111100101001111
+		  Wrong bit: 10
+		  Dec-wrong: 10011001111
+		  Dec-right: 10011101111
+		david@david-nb ~/dev/misc/uni/ids $ 
