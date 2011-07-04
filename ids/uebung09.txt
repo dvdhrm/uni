@@ -1,0 +1,114 @@
+IDS - Uebung 9 - David Herrmann
+
+Aufgabe 23:
+	1 kB Daten = 1024 Byte
+	1024 Byte = 8192 Bit
+
+	Wahrscheinlichkeit, dass ein Bit falsch übertragen wird:
+		1 / 1000 = 0.001
+	Wahrscheinlichkeit, dass ein Bit richtig übertragen wird:
+		1 - 0.001 = 0.999
+
+	Wahrscheinlichkeit, dass 8192 Bit richtig übertragen werden:
+		0.999 ^ 8192 ~= 0.00027572716 ~= 0.028%
+
+	Bit die pro 4 Bit im 7/4 Hamming Code übertragen werden: 7 Bit
+	Wahrscheinlichkeit, dass 7 Bit richtig übertragen werden:
+		0.999 ^ 7
+	Wahrscheinlichkeit, dass 6 Bit richtig übertragen werden und 1 falsch:
+		(0.999 ^ 6 * 0.001) * 7
+
+	Wahrscheinlichkeit, dass mindestens 6 von 7 Bit richtig übertragen werden:
+		(die zwei vorherigen addiert)
+		0.999 ^ 7 + (0.999 ^ 6 * 0.001) * 7 ~= 0.999979069895
+
+	Wahrscheinlichkeit, dass mindestens 6 von 7 Bit richtig übertragen
+	werden entspricht der Wahrscheinlichkeit, dass 4 Bits im Hammingcode
+	richtig übertragen werden. Das jetzt hochrechnen auf 8192 Bit:
+		0.9999790 ^ (8192 / 4) ~= 0.958040 ~= 96%
+
+	Daselbe für 15/11 Hamming Code:
+		(0.999 ^ 15 + 0.999 ^ 14 * 0.001 * 15) ^ (8192 / 11)
+			~= 0.9254032 ~= 93%
+
+Aufgabe 24:
+	a 0.42---------------------------0--+---
+	e 0.20--------------------10--+--1-´
+	c 0.17------------110--+--11-´
+	b 0.12 --1111--+--111-´
+	d 0.09 --1110-´
+
+	+------+---+
+	| Bit  | V |
+	+------+---+
+	| 1111 | b |
+	| 1110 | d |
+	|  110 | c |
+	|   10 | e |
+	|    0 | a |
+	+------+---+
+
+		eaaaaacedc
+	=>
+		10 0 0 0 0 0 110 10 1110 110
+	=>
+		1000 0001 1010 1110 110
+		8    1    a    e    110
+	=>
+		81ae;110
+
+
+		a59fe;00 = 1010010110011111111000
+		1010 0101 1001 1111 1110 00
+		10 10 0 10 110 0 1111 1111 0 0 0
+	=>
+		eeaecabbaaa
+
+	Man bräuchte 3 Bits pro Zeichen, das entspricht beim ersten Beispiel
+	30 Bits und beim zweiten 33 Bits.
+	Komprimiert braucht das erste 19 Bits und das zweite 22 Bits.
+
+	Kompressionsgrad 1: 1 - (19 / 30) ~= 0.37 = 37%
+	Kompressionsgrad 2: 1 - (22 / 33) ~= 0.33 = 33%
+
+Aufgabe 25:
+	32 Bit System, 1 GB Ram, Pagesize 2mb, virt. 4GB
+
+	Eine Pagesize von 2MB entspricht 2^21 Byte. Da aber 22 Bit für die
+	Frame-Offset Adressierung zur Verfügung stehen, ist ein Frame 2^22,
+	also 4 MB groß. Ein Frame und eine Page müssen aber zwangsweise
+	gleichgroß sein, da man sonst mit 10 Bit für die Pagetable nur die
+	Hälfte aller Pages adressieren könnte.
+	Folglich nehm ich eine Pagesize von 4MB an. Auch möglich wären einfach
+	11/21 Biteinteilung der Adressen.
+
+	4 GB = 2^32 Byte
+	4 MB = 2^22 Byte
+	2^32 / 2^22 = 1024
+	Es existieren 1024 Seiten im virtuellen Speicher.
+
+	1 GB = 2^30 Byte
+	2^30 / 2^22 = 256
+	Es existieren 256 Frames im physikalischen Speicher.
+
+	In der Pagetable müssen Einträge für 1024 Pages liegen. Jede Page muss
+	aber einen von 256 Frames verweisen, also braucht jede Page einen
+	Eintrag von (2^8=256) einem Byte.
+	Die Pagetable ist also genau 1024 Byte groß wenn keine Meta-informationen
+	gespeichert werden.
+
+	Die Adressierung läuft folgendermaßen ab:
+	In einem festen Register liegt die Basisadresse des Page-Directories.
+	Auf diese Adresse wird der Page-Directory-Offset (die obene 10 Bit einer
+	Adresse) draufgerechnet mit einer möglichen Skalierung (in unserem Beispiel
+	ist das aber 1). An dieser Stelle im Page-Directory liegt nun die
+	Basisadresse unseres Frames. Auf diese Adresse wird der Frameoffset, also
+	die unteren 22 Bit unserer Adresse hinzugerechnet und wir erhalten die
+	fertige physikalische Adresse.
+	Es können noch zusätzliche Meta-Informationen im Page-Directory gespeichert
+	sein. Wenn wir also eine Frame-Adresse im Page-Directory finden, kann es
+	sein, dass diese Frame-Adresse ungültig ist, weil die Page gerade nicht
+	auf ein Frame gemapped ist, oder unbekannt ist, oder sonst etwas. Dies
+	muss also davor noch überprüft werden. In unserem Beispiel existieren
+	solche Meta-Informationen jedoch nicht und ein direkter Zugriff kann
+	erfolgen.
