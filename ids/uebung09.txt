@@ -1,4 +1,4 @@
-IDS - Uebung 9 - David Herrmann
+IDS - Uebung 9 - Philip Koch, David Herrmann
 
 Aufgabe 23:
 	1 kB Daten = 1024 Byte
