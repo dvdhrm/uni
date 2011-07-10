@@ -1,0 +1,6 @@
+To compile the sources:
+	make compile
+To compile and run the tests:
+	make tests
+To clean the directory from all generated code:
+	make clean
