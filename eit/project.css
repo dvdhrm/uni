@@ -1,0 +1,63 @@
+body
+{
+	background-color: white;
+}
+#search, #list, #insert
+{
+	margin: 10px;
+	border: 1px solid black;
+	background-color: #aaa;
+}
+#search span, #list span
+{
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.3em;
+}
+#search form
+{
+	text-align: center;
+}
+#insert
+{
+	width: 50%;
+	margin: auto;
+	padding: 20px;
+}
+#insert input
+{
+	display: block;
+	width: 90%;
+	margin: auto;
+}
+#insert input[type=submit]
+{
+	display: inline;
+	width: inherit;
+	margin: 5px;
+}
+#list table
+{
+	margin: auto;
+	border-collapse: collapse;
+	border: 1px solid black;
+	margin-bottom: 10px;
+}
+#list td
+{
+	border: 1px dotted black;
+}
+#list thead td
+{
+	font-weight: bold;
+	border: 1px solid black;
+}
+.error
+{
+	text-align: center;
+	border: 1px solid red;
+	background-color: #ee7777;
+	font-weight: bold;
+	font-size: 1.3em;
+}
