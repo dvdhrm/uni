@@ -1,0 +1,101 @@
+ETI - Uebung 1
+(Mit Monospace-Font lesen...)
+
+Aufgabe 1:
+1)
+	dezimal 156 nach binär:
+	bin(1000 0000) = 128 = 156 - 28
+	bin(1001 0000) = 144 = 156 - 12
+	bin(1001 1000) = 152 = 156 - 4
+	bin(1001 1100) = 156
+2)
+	oktal 63 nach dezimal:
+	bin(110 011) = oct(63)
+	bin(11 0011) = 32 + 16 + 2 + 1 = 51
+3)
+	47,625 dezimal nach binär
+	bin(0010 1111) = 47
+	   0.625 * 2
+	=> 1.25  | -1 | * 2
+	=> 0.5   | -0 | * 2
+	=> 1.0   | -1
+	bin(0 , 101) = 0,625
+	bin(0010 1111 , 1010) = 47,625
+4)
+	176,5 dezimal nach hexadezimal
+	hex(b0) = 176
+	hex(0 , 8) = 0,5
+	hex(b0 , 8) = 176,5
+5)
+	e78 hexadezimal nach oktal
+	bin(1110 0111 1000) = hex(e78)
+	bin(111 001 111 000) = oct(7170)
+6)
+	1010 1001 0010 binär nach hexadezimal
+	   a    9    2
+	hex(a92) = bin(1010 1001 0010)
+
+Aufgabe 2:
+	X = 11 / 7 = 3.14285714 / 2 = 1.57142857
+	X = 2^0 * 1.57142857
+1)
+	X = (-1)^s * 2 ^ (e - 15) * (1 + f)
+	X = (-1)^0 * 2 ^ (15 - 15) * (1 + 0.57142857)
+2)
+	s = 0
+	s-binär: 0
+	e = 15
+	e-binär: 01111
+	f = 0.57142857
+	f-binär: 0 , 1001 0010 0100 (periode 100)
+	f-binär: 0 , 10 0100 1001 (auf 10 Bit begrenzt)
+3)
+	s-e-f
+	0 10000 1001001001
+	0100 0010 0100 1001
+
+4)
+	bin(0100 0010 0100 1001) = hex(4249)
+
+Aufgabe 3:
+1)
+	Bitfolge: | VZL | 2er Komp. | Betrag/VZ
+	----------|-----|-----------|-----------
+	1010:     | 10  | -6        | -2
+	0000:     |  0  |  0        |  0
+	0101:     |  5  |  5        |  5
+	1000:     |  8  | -8        | -0
+	1111:     | 15  | -1        | -7
+2)
+	Zahl: | VZL  | 2er Komp. | Betrag/VZ
+	------|------|-----------|-----------
+	   -2 | N/A  | 1110      | 1010
+	   -5 | N/A  | 1011      | 1101
+	   10 | 1010 |    N/A    |    N/A
+	   -1 | N/A  | 1111      | 1001
+	   -8 | N/A  | 1000      |    N/A
+
+Aufgabe 4:
+1)
+	A = Amperemeter
+	V = Voltmeter
+	R = Widerstand
+	G = Quelle
+
+	 +----------(A)-----+------+
+	 |                  |      |
+	+|                  |      |
+	(=)G               |R|    (V)
+	-|                  |      |
+	 |                  |      |
+	 +------------------+------+
+2)
+	R = U / I
+	R = 5 V / (2 / 1000) A = 5 * 1000 / 2 Ohm = 2.5 kOhm
+
+	Der Widerstand beträgt 2.5 kOhm.
+3)
+	P = U^2 / R
+	P = (25 / 2500) W = 1 / 100 W = 10 mW
+
+	Die Verlustleistung beträgt 10 mW.
