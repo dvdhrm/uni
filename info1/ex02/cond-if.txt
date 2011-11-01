@@ -1,0 +1,16 @@
+; Convert "conditions" into "if"-clauses
+; Rules 1 to 3:
+
+(cond)                         := (violation "No condition was true")
+
+(cond (<clause> <expr>))       := (if <clause>
+                                      <expr>
+                                      (cond))
+(cond (<clause-1> <expr-1>)
+      (<clause-2> <expr-2>)
+      ...
+      (<clause-n> <expr-n>))   := (if <clause-1>
+                                      <expr-1>
+                                      (cond (<clause-2> <expr-2>)
+                                            ...
+                                            (<clause-n> <expr-n>)))
