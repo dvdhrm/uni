@@ -1,0 +1,65 @@
+Aufgabe 4:
+
+Zuerst der Beweis für einen DFA. Die Beweisidee ist, dass mindestens eine
+Schleife beim ableiten eines Wortes der Länge k vorkommen muss. Diese Schleife
+können wir beliebig oft durchlaufen.
+Wir limitieren also die erkannte Sprache auf EIN Wort der Länge k und zeigen
+dann, dass der Automat mit k Zuständen mindestens einmal eine Schleife
+durchläuft, um dieses Wort zu erkennen. Damit können wir zeigen, dass wir die
+Schleife beliebig oft durchlaufen können und somit der Automat mehr als ein Wort
+erkennt und damit die Sprache mehr als ein Wort enthält, was ein Widerspruch
+ist.
+
+Sei k ∈ N.
+Sei M ein DFA mit:
+	M = (Z, Σ, δ, S, E) mit:
+		|Z| = k
+		|Σ| ≠ 0
+		S ∈ Z
+		E ⊆ Z
+	⇒ k ≠ 0, da sonst Z = Ø und S undefiniert wäre.
+
+Sei a ∈ Σ.
+Sei L eine Sprache mit:
+	L = { a^k }
+⇒ |L| = 1
+⇒ ð(S, a^k) ∈ E
+⇒ L ist regulär, da sich ein regulärer Ausdruck durch Rekursion erstellen lässt:
+	(Regulärer Ausdruck für { a^k } = R(k) mit:
+		R(1): a
+		R(n+1): R(n) ∙ a
+
+Nun muss ð mindestens |a^k| = k Zustandsübergänge haben. Also:
+	δ(S, a) → ð(S, a^2) → ... → ð(S, a^(k-1)) → ð(S, a^k)
+Das entspricht (k+1) Zuständen. Wir wissen aber:
+	|Z| = k
+Folglich muss ein Zustand zweimal vorkommen. Es gilt also:
+	∃ x,y,z ∈ N: (y ≠ 0) ∧ (x+y+z = k) ∧ (a^k = a^x ∙ a^y ∙ a^z)
+		mit: ð(S, a^x) = ð(S, a^x ∙ a^y)
+
+Da: a^k ∈ L
+	⇒ ð(S, a^k) ∈ E
+Da: ð(S, a^k) = ð(S, a^x ∙ a^y ∙ a^z)
+	⇒ ð(S, a^k) = ð(ð(ð(S, a^x), a^y), a^z) ∈ E
+Da aber: ð(S, a^x) = ð(S, a^x ∙ a^y)
+	⇒ ð(ð(ð(ð(S, a^x), a^y), a^y), a^z) ∈ E
+	⇒ ð(S, a^x ∙ a^y ∙ a^y ∙ a^z) ∈ E
+Sei w = a^x ∙ a^y ∙ a^y ∙ a^z
+	⇒ ð(S, w) ∈ E
+	⇒ w ∈ L
+	⇒ |L| > 1, da (a^k ≠ w) und (a^k ∈ L) ∧ (w ∈ L)
+Das ist ein Widerspruch!
+Es existiert also kein DFA mit k Zuständen, der die Sprache L = { a^k } erkennt.
+
+
+Sei nun ein NFA gegeben. Wir wissen, dass wir konstruktiv einen NFA in einen DFA
+umwandeln können, sodass dieselbe Sprache erkannt wird und der erzeugte DFA 2^k
+Zustände besitzt.
+Nun gilt also, dass für jedes k ∈ N die Sprache L' = { a^(2^k) } existiert, die
+ein NFA mit k Zuständen nicht erkennen kann, weil:
+	Der NFA mit k Zuständen kann umgewandelt werden in einen DFA mit 2^k
+	Zuständen. Aber wie oben bewiesen, kann ein DFA mit x=2^k Zuständen
+	nicht die Sprache L = { a^x } = { a^(2^k) } = L' erkennen.
+Somit gilt allgemein:
+	Für einen beliebigen Automat mit k ∈ N Zuständen existiert eine reguläre
+	Sprache, die der Automat nicht erkennen kann.
