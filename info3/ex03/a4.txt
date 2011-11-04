@@ -23,11 +23,16 @@ Sei a ∈ Σ.
 Sei L eine Sprache mit:
 	L = { a^k }
 ⇒ |L| = 1
-⇒ ð(S, a^k) ∈ E
 ⇒ L ist regulär, da sich ein regulärer Ausdruck durch Rekursion erstellen lässt:
 	(Regulärer Ausdruck für { a^k } = R(k) mit:
 		R(1): a
 		R(n+1): R(n) ∙ a
+
+Wir behaupten nun, dass der Automat M die Sprache L abbildet. Durch den Beweis
+folgt ein Widerspruch.
+Es gilt also:
+	L(M) = L
+	⇒ ð(S, a^k) ∈ E
 
 Nun muss ð mindestens |a^k| = k Zustandsübergänge haben. Also:
 	δ(S, a) → ð(S, a^2) → ... → ð(S, a^(k-1)) → ð(S, a^k)
