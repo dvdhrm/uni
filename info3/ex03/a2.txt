@@ -1,0 +1,38 @@
+Aufgabe 2:
+
+a)
+	???
+
+b)
+	Γ = { a, b }
+	Ψ = { ), (, |, * }
+	Σ = Ψ ∪ Γ
+
+	P :=
+		S : Ø | N
+		N : ε | a | b | NN | (N|N) | (N)*
+
+	G = ({S, N}, Σ, P, S)
+
+c)
+	Ableitungsbaum für:
+		(a((a|b))*a|b((a|b))*b)
+
+	Ergänzung auf Papier...
+
+	                        (N|N)
+	             ( a((a|b))*a | b((a|b))*b )
+	                        /   \
+	                  ,----´    ...
+	                 NN
+	             a((a|b))* a
+	             /         |
+	           NN          |
+	         a ((a|b))*    |
+	        /     |        |
+	       /     (N)*      |
+	      /   ( (a|b) )*   |
+	     /        |        |
+	    /     ( a | b )    |
+	   /        /   |      |
+	  a        a    b      a

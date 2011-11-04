@@ -1,0 +1,62 @@
+Aufgabe 5:
+
+Vorraussetzungen:
+	Σ = { 0, 1 }
+	L = { w : w ⊆ Σ+ }
+
+	val : Σ+ → N
+	val(w) = (...binär-summe...)
+
+	L = { w ∈ Σ* | w = w1 ... wn, w.i ∈ Σ, n ∈ 2N
+	               a = w1 w3 ... w.(n-1)
+	               b = w2 w4 ... w.n
+	               2 * val(a) = val(b)
+
+Folgender regulärer Ausdruck erkennt diese Sprache:
+	0(11|00)*0
+
+Begründung:
+	Wir wählen ein beliebiges a. Als Beispiel hier:
+		a = 0001011101
+	Abhängig davon können wir teilweise b bestimmen:
+		val(b) = 2 * val(a)
+		val(b) = 2 * val(1011101)
+	Binär mal 2 entspricht einem links-shift:
+		val(b) = val(10111010)
+	Setzen wir nun einmal:
+		b' = 10111010
+	Wir können b nun aus b' bekommen, indem wir vorne Nullen dranhängen, bis
+	es dieselbe Länge hat wie a. Wir können keine Einsen dranhängen, da es
+	sonst den Binärwert verändert. Aus dem selben Grund dürfen wir hinten
+	nichts dranhängen! b ist also:
+		b = 0010111010
+	Nun setzen wir w aus a und b zusammen:
+		a = 0  0  0  1  0  1  1  1  0  1
+		b =   0  0  1  0  1  1  1  0  1  0
+		w = 0 00 00 11 00 11 11 11 00 11 0
+		w = 00000110011111100110
+	Und dieses w erkennt der reguläre Ausdruck.
+
+	Die Doppelziffern in der Mitte entsprechen dem Links-shift. Dadurch
+	haben a und b IMMER dieselbe Reihenfolge der Ziffern und beim ineinander
+	schreiben kommen diese nun paarweise zusammen.
+	Da durch den Linksshift hinten IMMER eine NULL bei b entsteht und w.n
+	Teil von b ist, muss der Ausdruck auf 0 enden.
+	Genauso muss der Ausdruck mit 0 anfangen, da das erste Zeichen von a
+	IMMER 0 ist. Andernfalls wäre |b| > |a| und die Bedingungen wären nicht
+	erfüllt.
+
+	Die Rückrichtung gilt genauso (vom regulären Ausdruck zur Sprache):
+	Da der Ausdruck immer mit 0 anfängt und mit 0 endet, folgern wir daraus,
+	dass a immer mit 0 anfängt und b immer mit 0 endet. Außerdem haben wir
+	immer eine gerade Anzahl an Zeichen, also gilt:
+		a = 0 ∙ X
+		b = X ∙ 0
+		mit |a| = |b|
+		und X = X
+	Nun führen wir einen rechts-shift auf b durch (division durch 2) und
+	vergleichen es mit dem Wert von a:
+		val(a) = val(b)
+		val(0 X) = val(X 0) / 2
+		val(X) = (X)
+	Folglich erkennt der Automat GENAU die angegebene Sprache.
