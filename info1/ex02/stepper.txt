@@ -1,0 +1,82 @@
+Ex-1:
+
+a)
+	((lambda (a) a)
+	 (+ ((lambda (a) (+ a 2)) 3) 2))
+
+	apply-lambda =>
+		((lambda (a) a)
+		 (+ (+ 3 2) 2))
+
+	apply-prim+ =>
+		((lambda (a) a)
+		 (+ 5 2))
+
+	apply-prim+ =>
+		((lambda (a) a) 7)
+
+	apply-lambda =>
+		7
+
+b)
+	(define pi 3.141)
+	(* 2 pi)
+
+	apply-id =>
+		(* 2 3.141)
+
+	apply-prim* =>
+		6.282
+
+c)
+	((lambda (pi) (* 2 pi)) pi)
+
+	apply-id =>
+		((lambda (pi) (* 2 pi)) 3.141)
+
+	apply-lambda =>
+		(* 2 3.141)
+
+	apply-prim* =>
+		6.282
+
+d)
+	(define pi-quadrat (* pi pi))
+	(/ pi-quadrat 2)
+
+	apply-id =>
+		(/ (* pi pi) 2)
+
+	apply-id =>
+		(/ (* 3.141 pi) 2)
+
+	apply-id =>
+		(/ (* 3.141 3.141) 2)
+
+	apply-prim* =>
+		(/ 9.865 2)
+
+	apply-prim/ =>
+		4.9325
+
+e)
+	(define quadrat (lambda (n) (* n n)))
+	(quadrat (+ 4 2))
+
+	apply-id =>
+		((lambda (n) (* n n)) (+ 4 2))
+
+	apply-prim+ =>
+		((lambda (n) (* n n)) 6)
+
+	apply-lambda =>
+		(* 6 6)
+
+	apply-prim* =>
+		36
+
+f)
+	((lambda (x) x) (lambda (x) x))
+
+	apply-lambda =>
+		(lambda (x) x)
