@@ -1,0 +1,160 @@
+ETI - Uebung 2 - Nikolaus Nouschak - David Herrmann
+(Mit Monospace-Font lesen...)
+
+Aufgabe 5:
+1)
+	Gegeben:
+		Widerstände in Reihenschaltung: R(1), R(2), ..., R(n)
+		Deren Leitwerte: G(1), G(2), ..., G(n)
+
+	Der Gesamtwiderstand anhand der Widerstandswerte:
+		Rg :=
+			f(x) = Σ(n=1, x) R(n)
+	Und anhand der Leitwerte:
+		Rg :=
+			g(x) = Σ(n=1, x) (1 / G(n))
+
+	Der Gesamtleitwert anhand der Widerstandswerte:
+		Gg :=
+			h(x) = 1 / (Σ(n=1, x) R(n)) = 1 / f(x)
+	Und anhand der Leitwerte:
+		Gg :=
+			i(x) = 1 / (Σ(n=1, x) (1 / G(n))) = 1 / g(x)
+2)
+	R(1) = 8.2 kΩ
+	R(2) = 5.6 kΩ
+	G(3) = 1 / R(3) = 200µS
+
+	R(3) = 1 / 200µS = (1000 / 200) kΩ = 5 kΩ
+
+	Der Gesamtwiderstand ist:
+		Rg = R(1) + R(2) + R(3) = 8.2 kΩ + 5.6 kΩ + 5 kΩ
+		Rg = 18.8 kΩ
+	Der Gesamtleitwert ist:
+		Gg = 1 / Rg = 1 / 18.8 kΩ ~= 53.19 µS
+
+Aufgabe 6:
+1)
+	Gegeben:
+		Widerstände in Parallelschaltung: R(1), R(2), ..., R(n)
+		Deren Leitwerte: G(1), G(2), ..., G(n)
+
+	Der Gesamtleitwert anhand der Leitwerte:
+		Gg :=
+			f(x) = Σ(n=1, x) G(n)
+	Und anhand der Widerstandswerte:
+		Gg :=
+			g(x) = Σ(n=1, x) (1 / R(n))
+
+	Der Gesamtwiderstand anhand der Leitwerte:
+		Rg :=
+			h(x) = 1 / (Σ(n=1, x) G(n)) = 1 / f(x)
+	Und anhand der Widerstandswerte:
+		Rg :=
+			i(x) = 1 / (Σ(n=1, x) (1 / R(n))) = 1 / g(x)
+
+2)
+	R(1) = 1.2 kΩ ⇒ G(1) = 1 / 1.2 kΩ ~= 0.833 mS
+	G(2) = 400 µS = 0.4 mS
+	R(3) = 550 Ω ⇒ G(3) = 1 / 550 ~= 1.81818 mS
+
+	Der Gesamtleitwert ist:
+		Gg = G(1) + G(2) + G(3)
+		Gg ~= 0.833 mS + 0.4 mS + 1.818 mS = 3.051 mS
+	Der Gesamtwiderstand ist:
+		Rg = 1 / Gg
+		Rg ~= 0.3278 kΩ
+
+Aufgabe 7:
+1)
+	Aus der Maschenregel ergibt sich:
+		U(1) = R(3) * I(3) + R(1) * I(1)
+		U(2) = R(3) * I(3) + R(2) * I(2)
+	Nach der Knotenregel gilt I(3) = I(1) + I(2)
+		U(1) = R(3) * (I(1) + I(2)) + R(1) * I(1)
+		U(2) = R(3) * (I(1) + I(2)) + R(2) * I(2)
+
+2)
+	Es gelte: I(1) = I(2)
+		⇒ I(1) + I(2) = 2 * I(1) = 2 * I(2)
+	Daher können wir die Gleichungen umstellen zu:
+		U(1) = R(3) * 2 * I(1) + R(1) * I(1)
+		     = I(1) * (R(3) * 2 + R(1))
+		⇒ I(1) = U(1) / (R(3) * 2 + R(1))
+
+		U(2) = R(3) * 2 * I(2) + R(2) * I(2)
+		     = I(2) * (R(3) * 2 + R(2))
+		⇒ I(2) = U(2) / (R(3) * 2 + R(2))
+
+	Als Relation/Bedingung zwischen beiden gilt nun:
+		     U(1)            U(2)
+		------------- = -------------
+		2*R(3) + R(1)   2*R(3) + R(2)
+
+3)
+	Gelte R(1), R(2) >> R(3)
+	Dann spielt R(3) nahezu keine Rolle mehr und die Gleichung nähert sich
+	folgender Form an:
+		     U(1)            U(2)
+		------------- = -------------
+		     R(1)            R(2)
+
+4)
+	Gelte R(1), R(2) << R(3)
+	Dann nähert sich die Gleichung folgender Form an:
+		     U(1)            U(2)
+		------------- = -------------
+		    2*R(3)          2*R(3)
+	Was multipliziert mit 2*R(3) folgendes ergibt:
+		     U(1) = U(2)
+
+Aufgabe 8:
+	...
+
+Aufgabe 9:
+1)
+	Die Aufladefunktion lautet:
+		U(c) = U(0) * (1 - e^(-t / (R*C)))
+	Parameter:
+		U(0) = 10 V
+		R = 100 Ω
+		t = 75 ms
+		U(c) = 8 V
+
+	Die Kapazität C des Kondensators ist somit:
+		8 V = 10 V * (1 - e^(-75ms / (100 Ω * C)))
+		0.8 = 1 - e^(-75ms / (100 Ω * C))
+		0.2 = e^(-75ms / (100 Ω * C))
+		ln(0.2) = -75ms / (100 Ω * C)
+		100 Ω * C = -75ms / ln(0.2)
+		C = -75ms / ln(0.2) / 100 Ω
+		C ~= 466 µF
+	Die Kapazität des Kondensators beträgt etwa 466 µF
+
+2)
+	Die Aufladefunktion lautet:
+		U(c) = U(0) * e^(-t / (R*C))
+	Parameter:
+		R(L) = 20 Ω
+		U(0) = 1 V
+		U(c) = 8 V
+		C = 466 µF
+
+	Die Lampe leuchtet bis:
+		1 V = 8 V * e^(-t / (20 Ω * 466 µF))
+		1/8 = e^(-t / (20 Ω * 466 µF))
+		ln(1/8) = -t / (20 Ω * 466 µF)
+		t = -ln(1/8) * 20 Ω * 466 µF
+		t = ln(8) * 20 Ω * 466 µF ~= 19.38ms
+
+	Die Lampe leuchtet etwa 19.38ms.
+
+Aufgabe 10:
+	Die Division durch zwei kann im Zweiersystem durch eine Bitverschiebung
+	nach rechts berechnet werden. Dabei fällt der LSB raus und der MSB wird
+	zu einer 0. Beispiel:
+		bin(0010 0011) / 2 = 0010 0011 >> 1 = bin(0001 0001)
+		    35         / 2 =      ...       =     17
+	Zu beachten ist, dass bei ungeraden Zahlen keine korrekte Rundung
+	durchgeführt wird, sondern die Kommastellen einfach abgeschnitten
+	werden.
