@@ -1,0 +1,94 @@
+Aufgabe 3:
+
+Als Vorbeweis dient folgende Aussage:
+Wenn ein DFA mit 3 Zuständen das Wort aaaa = a^4 erkennt, dann erkennt er auch
+mindestens eins von: a^3, a^2, a^1
+
+Die Beweisidee ist, dass mindestens eine Schleife beim Ableiten von a^4
+vorkommt. Diese Schleife lassen wir einfach weg und erhalten somit eins der
+anderen Wörter.
+
+Sei M ein DFA mit:
+	M = (Z, Σ, δ, S, E) mit:
+		|Z| = 3
+		|Σ| ≠ 0
+		S ∈ Z
+		E ⊆ Z
+
+Es gilt:
+	⇒ ð(S, a^4) ∈ E
+
+Nun muss ð mindestens |a^4| = 4 Zustandsübergänge haben. Also:
+	S → δ(S, a) → ð(S, a^2) → ð(S, a^3) → ð(S, a^4)
+Das entspricht 5 Zuständen. Wir wissen aber:
+	|Z| = 3
+Folglich muss ein Zustand mehrmals/zweimal vorkommen. Es gilt also:
+	∃ x,y,z ∈ N: (y ≠ 0) ∧ (x+y+z = 4) ∧ (a^k = a^x ∙ a^y ∙ a^z)
+		mit: ð(S, a^x) = ð(S, a^x ∙ a^y)
+
+Da: a^4 ∈ L(M)
+	⇒ ð(S, a^4) ∈ E
+Da: ð(S, a^4) = ð(S, a^x ∙ a^y ∙ a^z)
+	⇒ ð(S, a^4) = ð(ð(S, a^x ∙ a^y), a^z) ∈ E
+Da aber: ð(S, a^x) = ð(S, a^x ∙ a^y)
+	⇒ ð(ð(S, a^x), a^z) ∈ E
+	⇒ ð(S, a^x ∙ a^z) ∈ E
+Sei w = a^x ∙ a^z
+	⇒ ð(S, w) ∈ E
+	⇒ w ∈ L(M)
+
+Da y ≠ 0 gilt:
+	w ∈ { a, aa, aaa }
+
+Somit enthält die Sprache L(M) mindestens eins von { a, aa, aaa }.
+
+
+a)
+	Aussage: Es gibt keinen DFA mit 3 Zuständen, der folgende Sprache
+	abbildet:
+		L = aaaaΣ*
+
+	Die Sprache enthält das Wort aaaa:
+		aaaaΣ^0 = aaaaε = aaaa ∈ L
+	Sie enthält aber nicht a, aa und aaa:
+		a, aa, aaa !∈ L
+	weil:
+		|aaaa| + |Σ*| ≥ 4
+
+	Laut Vorbeweis gilt aber, dass ein DFA mit 3 Zuständen, der aaaa
+	erkennt, auch eins von a, aa und aaa erkennen muss. Somit kann kein DFA
+	für die Sprache L existieren.
+
+b)
+	Aussage: Es gibt keinen DFA mit 3 Zuständen, der folgende Sprache
+	abbildet:
+		L = (aaaa)*
+
+	Die Sprache enthält das Wort aaaa:
+		(aaaa)^1 = aaaa ∈ L
+	Sie enthält aber nicht a, aa und aaa:
+		a, aa, aaa !∈ L
+	weil:
+		|(aaaa)^x| ≥ 4 für x > 0
+	und:
+		|(aaaa)^0| = 0
+
+	Laut Vorbeweis gilt aber, dass ein DFA mit 3 Zuständen, der aaaa
+	erkennt, auch eins von a, aa und aaa erkennen muss. Somit kann kein DFA
+	für die Sprache L existieren.
+
+c)
+	Aussage: Es gibt keinen DFA mit 3 Zuständen, der folgende Sprache
+	abbildet:
+		L = Σ*aaaa
+
+	Die Sprache enthält das Wort aaaa:
+		Σ^0aaaa = εaaaa = aaaa ∈ L
+	Sie enthält aber nicht a, aa und aaa:
+		a, aa, aaa !∈ L
+	weil:
+		|Σ*| + |aaaa| ≥ 4
+
+	Laut Vorbeweis gilt aber, dass ein DFA mit 3 Zuständen, der aaaa
+	erkennt, auch eins von a, aa und aaa erkennen muss. Somit kann kein DFA
+	für die Sprache L existieren.
