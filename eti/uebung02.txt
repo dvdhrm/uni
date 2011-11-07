@@ -109,7 +109,39 @@ Aufgabe 7:
 		     U(1) = U(2)
 
 Aufgabe 8:
-	...
+1)
+	Die Leistung an einem Widerstand wird berechnet mit:
+		P = U * I
+	Bei Wechselspannung sind die Faktoren abhängig von der Zeit:
+		P(t) = U(t) * I(t)
+	Nun kann man I = U/R einsetzen:
+		P(t) = U^2(t) / R
+
+	Einen Mittelwert erhält man durch Integrieren gefolgt von Multiplizieren
+	mit dem Kehrwert. Wir integrieren also über das Zeitinterval um den
+	zeitlichen Mittelwert zu erhalten:
+		      1    T  U^2(t)
+		P =  --- * ∫ ------- dt
+		      T    0    R
+
+		       1     T
+		P =  ----- * ∫ U^2(t) dt
+		      R*T    0
+
+	Bei Gleichspannung gilt: P = U^2 / R
+	Das können wir nun für P einsetzen und erhalten:
+
+		U^2     1     T
+		--- = ----- * ∫ U^2(t) dt
+		 R     R*T    0
+
+		      ___________________
+		     /  1    T
+		U = √  --- * ∫ U^2(t) dt
+		        T    0
+
+	Dies ist die Gleichspannung, die dieselbe Leistung bringt, also der
+	Effektivwert.
 
 Aufgabe 9:
 1)
