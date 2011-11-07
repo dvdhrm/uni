@@ -56,7 +56,12 @@ Begründung:
 		und X = X
 	Nun führen wir einen rechts-shift auf b durch (division durch 2) und
 	vergleichen es mit dem Wert von a:
-		val(a) = val(b)
+		2 * val(a) = val(b)
 		val(0 X) = val(X 0) / 2
-		val(X) = (X)
+		val(X) = val(X)
 	Folglich erkennt der Automat GENAU die angegebene Sprache.
+
+
+	Das leere Wort ist nicht Teil der Sprache, da val(ε) nicht definiert
+	ist. Folglich ist val(ε) ≠ val(ε) und ε !∈ L.
+	Genauso wie 0 / 0 ≠ 0 / 0 gilt!
