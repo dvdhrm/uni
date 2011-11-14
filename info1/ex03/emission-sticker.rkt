@@ -143,6 +143,7 @@
                     (<= (vehicle-emission car) 75))
                4)
               ((= (vehicle-emission car) 77) 4)
+              ; cars not listed in the table are considered type-1
               (else 1)))))
 
 ; install emission filter and return new vehicle
@@ -163,40 +164,67 @@
 (check-expect (install-emission-filter
                (make-vehicle "Diesel" "PM3" 5))
               (make-vehicle "Diesel" "PM3" 5))
+(check-expect (install-emission-filter
+               (make-vehicle "Diesel" "PM1" 70))
+              (make-vehicle "Diesel" "PM2" 70))
+(check-expect (install-emission-filter
+               (make-vehicle "Diesel" "PM1" 98))
+              (make-vehicle "Diesel" "PM1" 98))
 
 (define install-emission-filter
   (lambda (car)
     (cond ((string=? (vehicle-gas car) "Benzin") car)
           ((string=? (vehicle-filter car) "PM3") car)
-          ((string=? (vehicle-filter car) "PM2")
-           (if (or (= (vehicle-emission car) 32)
-                   (= (vehicle-emission car) 33)
-                   (= (vehicle-emission car) 38)
-                   (= (vehicle-emission car) 39)
-                   (= (vehicle-emission car) 43)
-                   (and (>= (vehicle-emission car) 53)
-                        (<= (vehicle-emission car) 66)))
-               (make-vehicle (vehicle-gas car) "PM3" (vehicle-emission car))
-               car))
-          ((string=? (vehicle-filter car) "PM1")
-           (cond ((or (= (vehicle-emission car) 30) 
-                      (= (vehicle-emission car) 31) 
-                      (= (vehicle-emission car) 36) 
-                      (= (vehicle-emission car) 37) 
-                      (= (vehicle-emission car) 42) 
-                      (and (>= (vehicle-emission car) 44)
-                           (<= (vehicle-emission car) 48))
-                      
-                      (and (>= (vehicle-emission car) 67)
-                           (<= (vehicle-emission car) 70)))
-                  (make-vehicle (vehicle-gas car) "PM2" (vehicle-emission car)))
-                 ((or (= (vehicle-emission car) 32)
-                      (= (vehicle-emission car) 33)
-                      (= (vehicle-emission car) 38)
-                      (= (vehicle-emission car) 39)
-                      (= (vehicle-emission car) 43)
-                      (and (>= (vehicle-emission car) 53)
-                           (<= (vehicle-emission car) 66)))
-                  (make-vehicle (vehicle-gas car) "PM3" (vehicle-emission car)))
-                 (else car)))
+          ((or (= (vehicle-emission car) 32)
+               (= (vehicle-emission car) 33)
+               (= (vehicle-emission car) 38)
+               (= (vehicle-emission car) 39)
+               (= (vehicle-emission car) 43)
+               (and (>= (vehicle-emission car) 53)
+                    (<= (vehicle-emission car) 66)))
+           (make-vehicle (vehicle-gas car) "PM3" (vehicle-emission car)))
+          ((or (= (vehicle-emission car) 30) 
+               (= (vehicle-emission car) 31) 
+               (= (vehicle-emission car) 36) 
+               (= (vehicle-emission car) 37) 
+               (= (vehicle-emission car) 42) 
+               (and (>= (vehicle-emission car) 44)
+                    (<= (vehicle-emission car) 48))
+               
+               (and (>= (vehicle-emission car) 67)
+                    (<= (vehicle-emission car) 70)))
+           (make-vehicle (vehicle-gas car) "PM2" (vehicle-emission car)))
           (else car))))
+
+; maybe install emission filter if possible
+(: maybe-install-emission-filter
+   (vehicle -> (mixed (one-of "You better get a new car!") vehicle)))
+
+(check-expect (maybe-install-emission-filter
+               (make-vehicle "Benzin" "PM1" 5))
+              "You better get a new car!")
+(check-expect (maybe-install-emission-filter
+               (make-vehicle "Diesel" "PM1" 30))
+              (make-vehicle "Diesel" "PM2" 30))
+(check-expect (maybe-install-emission-filter
+               (make-vehicle "Diesel" "PM1" 66))
+              (make-vehicle "Diesel" "PM3" 66))
+(check-expect (maybe-install-emission-filter
+               (make-vehicle "Diesel" "PM2" 43))
+              (make-vehicle "Diesel" "PM3" 43))
+(check-expect (maybe-install-emission-filter
+               (make-vehicle "Diesel" "PM3" 5))
+              "You better get a new car!")
+(check-expect (maybe-install-emission-filter
+               (make-vehicle "Diesel" "PM1" 70))
+              (make-vehicle "Diesel" "PM2" 70))
+(check-expect (maybe-install-emission-filter
+               (make-vehicle "Diesel" "PM1" 98))
+              "You better get a new car!")
+
+(define maybe-install-emission-filter
+  (lambda (car)
+    (if (= (calculate-emission-group (install-emission-filter car))
+           1)
+        "You better get a new car!"
+        (install-emission-filter car))))
