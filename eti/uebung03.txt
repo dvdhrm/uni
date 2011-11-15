@@ -1,0 +1,115 @@
+ETI - Uebung 3 - Nikolaus Nouschak - David Herrmann
+
+Aufgabe 11:
+	1)
+		Bei 0V und 1V ist es immer 0!
+		Siehe Diagramm 1 nmos2.png
+	2)
+		nicht bearbeitet
+
+Aufgabe 12:
+	                   |
+	                   | Drain
+	             |-----+
+	            ||
+	            ||-<<----+
+	    Gate    ||       | Bulk
+	       -----+|-----+-+
+	                   |
+	                   | Source
+	Es handelt sich um einen nMOS-FE-Transistor.
+
+	Sei: U(b) = 5 V und R = 100 kΩ
+	a)
+		sperrend
+		Sei R(t) = 10 MΩ:
+		U(out) = U(b) * R(t) / (R + R(t))
+		U(out) = 5 V * 10 MΩ / (100 kΩ + 10000 kΩ)
+		U(out) = 50000 V / 10100
+		U(out) = 50 V / 10.1
+		U(out) ~= 4.95 V
+	b)
+		geöffnet
+		Sei R(t) = 100 Ω
+		U(out) = U(b) * R(t) / (R + R(t))
+		U(out) = 5 V * 100 Ω / (100 kΩ + 100 Ω)
+		U(out) = 500 V / 100100
+		U(out) = 5 V / 1001
+		U(out) = 0.004995 V
+
+Aufgabe 13:
+	Bei einem herkömmlichen ohmschen Widerstand fließen Leckströme, wenn der
+	Transistor geöffnet ist. Diese Ströme können verhindert werden, wenn
+	stattdessen ein zweiter Transistor verwendet wird. Dieser wird genau
+	entgegengesetzt zum ersten geschaltet, sodass der zweite Transistor
+	schließt, wenn der erste geöffnet ist und umgekehrt. So fließt nahezu
+	kein Leckstrom und die Verlustleistung des Transistors hält sich klein.
+
+	Der Vorteil eines nMOS ist, dass dieser schneller schaltet, da die
+	Majoritätsträger Elektronen sind und diese beweglicher als die
+	Defektelektronen im pMOS sind.
+	Der praktische Vorteil ist eine höhere mögliche Taktfrequenz und eine
+	ebenso höhere Packungsdichte.
+
+Aufgabe 14:
+	Da die Transistoren komplementär geschaltet sind, reicht es einen
+	Stromfluss auszurechenen, da der andere äquivalent sein muss.
+
+	Da die Formel fürn Sättigungsbereich einfacher ist, hab ich nur die
+	genommen ;)
+
+1)
+	U(in) = 0 V
+	U(out) = 5 V
+	nMOS im Sperrbereich
+	pMOS im Sättigungsbereich
+	I(S) = 0 A
+
+2)
+	U(in) = 1.5 V
+	U(out) = 4.95 V
+
+	Arbeitsbereich
+	pMOS: U(ds) = 5.0 V - 4.95 V = 0.05 V
+	U(gs) = 1.5 V - 5 V = - 3.5 V
+
+	Sättigungsbereich
+	nMOS: U(ds) = 4.95 V
+	U(gs) = 1.5 V
+
+	I(S) = β / 2 * (1.5V - 1.0V)^2 = 6.25 µA
+
+3)
+	U(in) = 2.5 V
+	U(out) = 2.5 V
+
+	Sättigungsbereich
+	pMOS: U(ds) = 5.0 V - 2.5 V = 2.5 V
+	U(gs) = 2.5 V
+
+	Sättigungsbereich
+	nMOS: U(ds) = 5.0 V - 2.5 V = 2.5 V
+	U(gs) = 2.5 V
+
+	I(S) = β / 2 * (2.5 V - 1.0 V)^2 = 56.25 μA
+
+4)
+	U(in) = 3.5 V
+	U(out) = 0.05 V
+
+	Arbeitsbereich
+	nMOS: U(ds) = 5.0 V - 4.95 V = 0.05 V
+	U(gs) = 3.5V
+
+	Sättigungsbereich
+	pMOS: U(ds) = 4.95 V
+	U(gs) = -1.5 V
+
+	I(S) = β / 2 * (-1.5V - (-1.0V))^2 = 6.25 µA
+
+5)
+	U(in) = 5 V
+	U(out) = 0 V
+	pMOS im Sperrbereich
+	nMOS im Sättigungsbereich
+	I(S) = 0 A
