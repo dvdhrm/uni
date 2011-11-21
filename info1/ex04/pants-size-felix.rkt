@@ -1,6 +1,6 @@
 ;; Die ersten drei Zeilen dieser Datei wurden von DrRacket eingefügt. Sie enthalten Metadaten
 ;; über die Sprachebene dieser Datei in einer Form, die DrRacket verarbeiten kann.
-#reader(lib "DMdA-assignments-reader.ss" "deinprogramm")((modname pants-size) (read-case-sensitive #f) (teachpacks ((lib "image2.ss" "teachpack" "deinprogramm") (lib "geocoder.rkt" "installed-teachpacks"))) (deinprogramm-settings #(#f write repeating-decimal #f #t none explicit #f ((lib "image2.ss" "teachpack" "deinprogramm") (lib "geocoder.rkt" "installed-teachpacks")))))
+#reader(lib "DMdA-assignments-reader.ss" "deinprogramm")((modname pants-size-felix) (read-case-sensitive #f) (teachpacks ()) (deinprogramm-settings #(#f write repeating-decimal #f #t none explicit #f ())))
 ; David Herrmann / Felix Bartusch
 ; Aufgabe 1a)
 
@@ -54,24 +54,17 @@
 ; Wir nehmen an, dass eine Amerikanische Hose einen Umfang und Länge > 0 hat, sonst wäre sie nicht existent
 ; Sie können aber unendlich groß werden
 
-(: circumference? (real -> boolean))
-(check-expect (circumference? -10.5) #f)
-(check-expect (circumference? 22) #t)
-(define circumference?
-  (lambda (x)
-    (> x 0)))
-
-(: length? (real -> boolean))
-(check-expect (length? -10.5) #f)
-(check-expect (length? 22) #t)
-(define length?
+(: greater-zero? (real -> boolean))
+(check-expect (greater-zero? -10.5) #f)
+(check-expect (greater-zero? 22) #t)
+(define greater-zero?
   (lambda (x)
     (> x 0)))
 
 (define circumference
-  (signature (predicate circumference?)))
+  (signature (predicate greater-zero?)))
 (define pants-length
-  (signature (predicate length?)))
+  (signature (predicate greater-zero?)))
 
 
 (: make-american-pants (circumference pants-length -> american-pants))
@@ -103,11 +96,11 @@
 
 (: german-size (german-pants -> size))
 (check-expect (german-size 30) "short")
-(check-expect (german-size 42) "medium")
-(check-expect (german-size 66) "tall")
+(check-expect (german-size 32) "medium")
+(check-expect (german-size 64) "tall")
 (define german-size
   (lambda (x)
-    (cond ((<= x 32) "short")
+    (cond ((< x 32) "short")
           ((>= x 64) "tall")
           (else "medium"))))
 
@@ -130,8 +123,7 @@
 (define american-size
   (lambda (pants)
     (cond ((>= (american-pants-circumference pants) (american-pants-length pants)) "short")
-          ((and (< (american-pants-circumference pants) (american-pants-length pants))
-                (< (- (american-pants-length pants) (american-pants-circumference pants)) 6)) "medium")
+          ((< (abs (- (american-pants-length pants) (american-pants-circumference pants))) 6) "medium")
           (else "tall"))))
 
 ; c)
