@@ -1,0 +1,41 @@
+ETI - Uebung 4 - David Herrmann
+
+Aufgabe 15:
+	1)
+		Siehe circuit-1.png
+	2)
+		Siehe circuit-2.png
+
+Aufgabe 16:
+
+Aufgabe 17:
+	f(a, b) = (¬a ∧ b) ∨ (a ∧ ¬b)
+
+	Es handelt sich hierbei um die XOR Funktion.
+	Für das Schaltbild siehe cmos.png. Die unterschiedlichen Farben
+	markieren a, ¬a, b, ¬b und y.
+
+	Funktionstabelle:
+		|  a  |  b  |  y  |
+		+-----+-----+-----+
+		|  0  |  0  |  0  |
+		|  0  |  1  |  1  |
+		|  1  |  0  |  1  |
+		|  1  |  1  |  0  |
+		+-----+-----+-----+
+
+Aufgabe 18:
+	|  E1 |  E2 |  E3 |  A  |
+	+-----+-----+-----+-----+
+	|  0  |  0  |  0  |  1  |
+	|  0  |  0  |  1  |  0  |
+	|  0  |  1  |  0  |  1  |
+	|  0  |  1  |  1  |  0  |
+	|  1  |  0  |  0  |  1  |
+	|  1  |  0  |  1  |  0  |
+	|  1  |  1  |  0  |  0  |
+	|  1  |  1  |  1  |  0  |
+	+-----+-----+-----+-----+
+
+	Diese Schaltung implementiert folgende Gleichung:
+		f(E1, E2, E3) = ¬E3 ∧ (¬E2 ∨ ¬E1)
