@@ -1,0 +1,315 @@
+Aufgabe 1:
+a)
+	Die Menge aller korrekten Klammerungen über (, ), [, ]:
+
+	G = (V, Σ, S, P)
+	V = { S }
+	Σ = { (, ), [, ] }
+	P = {
+		S -> ( S ) S
+		S -> [ S ] S
+		S -> λ
+	}
+
+	Eine korrekte Klammerung besteht immer aus einem Auf-Zu Klammerpaar.
+	Dabei muss jedes Sub-Wort wieder korrekt geklammert sein. Anstatt dem
+	leeren Wort können beliebige ungeklammerte-Ausdrücke stehen, wenn das
+	Alphabet erweitert wird.
+
+b)
+	{ w ∈ { a, b }* | #a(w) = 2 * #b(w) }
+
+	G = (V, Σ, S, P)
+	V = { S, X, Y }
+	Σ = { a, b }
+	P = {
+		S -> bX | aY | λ
+		X -> SaSaS
+		Y -> SaSbS
+		Y -> SbSaS
+	}
+
+	Ein Wort fängt entweder mit einem "b" an gefolgt von einem Ausdruck, der
+	wieder 2 a's enthält (X). Oder es fängt mit "a" an gefolgt von einem
+	Ausdruck, der ein "a" und "b" enthält (Y).
+	Sowohl X als auch Y können aber wiederum wieder eingepackt sein in
+	Ausdrücke, die doppelt so viele a's wie b's haben.
+
+c)
+	Die Menge aller Wörter in { a, b }*, so dass die Anzahl der a's vor dem
+	letzten "b" gleich der Anzahl an b's nach dem ersten "a" ist.
+
+	G = (V, Σ, S, P)
+	V = { }
+	Σ = { a, b }
+	P = {
+		S -> bS
+		S -> Sa
+		S -> λ
+		S -> aXb
+		X -> XaXbX
+		X -> XbXaX
+		X -> λ
+	}
+
+	Die Anzahl an b's for dem ersten "a" und die Anzahl an a's nach dem
+	letzten "b" spielen keine Rolle. Das übernehmen die ersten beiden
+	Regeln. Die 4. Regel liest das erste "a" und das letzte "b" als Marker.
+	Dazwischen müssen lediglich gleich-viele a's und b's vorkommen, was die
+	"X -> Y" Regeln übernehmen.
+
+Aufgabe 2:
+a)
+	Die beschriebene Sprache ist kontextfrei. Folgender Kellerautomat
+	erkennt diese Sprache:
+
+	M = (Z, Σ, Γ, δ, z0, #, F)
+	Z = { z0, z1, z2 }
+	Σ = { l, r }
+	Γ = { #, S }
+	F = { z0 }
+
+	δ ist definiert durch folgende Konfigurations-Übergänge:
+		( z0, l, # ) -> ( z1, S# )
+		( z0, r, # ) -> ( z2, S# )
+
+		( z1, l, S ) -> ( z1, SS )
+		( z1, r, S ) -> ( z1, λ )
+		( z1, λ, # ) -> ( z0, # )
+
+		( z2, r, S ) -> ( z2, SS )
+		( z2, l, S ) -> ( z2, λ )
+		( z2, λ, # ) -> ( z0, # )
+
+	Der Automat startet in einem Endzustand, da das leere Wort auch Teil der
+	Sprache ist. Wenn er nach links geht, wechselt er in Zustand z1 und legt
+	für jeden Schritt nach links ein S auf den Stack. Für jeden Schritt nach
+	rechts entfernt er wieder ein S vom Stack. Wenn der Stack leer ist,
+	wechselt er wieder in den Endzustand z0, da wir nun wieder am Start
+	sind. Wenn wir nun nach rechts gehen, gehen wir in Zustand z2 welche
+	analog zu z1 ist nur für die rechte Seite.
+	Nur wenn gleich viele Schritte nach rechts oder links gemacht wurden,
+	ist der Stack leer und wir landen in Zustand z0 dank Lambda-Übergang.
+
+b)
+	Nach Pumping-Lemma ist die beschriebene Sprache nicht kontextfrei:
+		Sei n ∈ N:
+		⇒ w = l^n ∙ v^n ∙ r^n ∙ h^n ∈ L
+		⇒ 4n = |w| > n
+
+		Sei w = uvwxy mit |vwx| ≤ n ∧ |vx| > 0
+		"vwx" kann höchstens aus 2 versch. Buchstaben bestehen:
+		Fall 1:
+			vwx = l^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |l| > |r|.
+		Fall 2:
+			vwx = l^x ∙ v^y mit x,y > 0
+			=> uv^2wx^2y !∈ L
+			Da |l| > |r|.
+		Fall 3:
+			vwx = v^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |v| > |h|.
+		Fall 4:
+			vwx = v^x ∙ r^y mit x,y > 0
+			=> uv^2wx^2y !∈ L
+			Da |r| > |l|.
+		Fall 5:
+			vwx = r^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |r| > |l|.
+		Fall 6:
+			vwx = r^x ∙ h^y mit x,y > 0
+			=> uv^2wx^2y !∈ L
+			Da |r| > |l|.
+		Fall 7:
+			vwx = h^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |h| > |v|.
+
+	Die Schritte nach vorne und die Schritte nach hinten müssen gleich viele
+	sein. Aber man kann nur eins von beiden pumpen. Dasselbe gilt für links
+	und rechts. Egal wo man pumpt, es wird nie synchron gepumpt.
+
+c)
+	Nach Pumping-Lemma ist die beschriebene Sprache nicht kontextfrei:
+		Sei n ∈ N:
+		⇒ w = l^n ∙ v^n ∙ o^n ∙ r^n ∙ h^n ∙ u^n ∈ L
+		⇒ 4n = |w| > n
+
+		Sei w = uvwxy mit |vwx| ≤ n ∧ |vx| > 0
+		"vwx" kann höchstens aus 2 versch. Buchstaben bestehen:
+		Fall 1:
+			vwx = l^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |l| > |r|.
+		Fall 2:
+			vwx = l^x ∙ v^y mit x,y > 0
+			=> uv^2wx^2y !∈ L
+			Da |l| > |r|.
+		Fall 3:
+			vwx = v^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |v| > |h|.
+		Fall 4:
+			vwx = v^x ∙ o^y mit x,y > 0
+			=> uv^2wx^2y !∈ L
+			Da |v| > |h|.
+		Fall 5:
+			vwx = o^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |o| > |u|.
+		Fall 6:
+			vwx = o^x ∙ r^y mit x,y > 0
+			=> uv^2wx^2y !∈ L
+			Da |r| > |l|.
+		Fall 7:
+			vwx = r^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |r| > |l|.
+		Fall 8:
+			vwx = r^x ∙ h^y mit x,y > 0
+			=> uv^2wx^2y !∈ L
+			Da |r| > |l|.
+		Fall 9:
+			vwx = h^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |h| > |v|.
+		Fall 10:
+			vwx = h^x ∙ u^y mit x,y > 0
+			=> uv^2wx^2y !∈ L
+			Da |h| > |v|.
+		Fall 11:
+			vwx = u^x mit x > 0
+			=> uv^2wx^2y !∈ L
+			Da |u| > |o|.
+
+	Die Schritte nach vorne und die Schritte nach hinten müssen gleich viele
+	sein. Aber man kann nur eins von beiden pumpen. Dasselbe gilt für links
+	und rechts und unten und oben.
+	Egal wo man pumpt, es wird nie synchron gepumpt.
+
+Aufgabe 3:
+a)
+	Das Komplement von: { a^i ∙ b^i ∙ c^i | i ≥ 0 }
+	Diese Sprache ist kontextfrei, denn sie ist pumpbar mit n = 1:
+		Sei w ∈ L mit |w| ≥ 1
+		Fall 1:
+			w = a^x ∙ b^y ∙ c^y mit x,y > 0 und x < y
+			Nun sei:
+				u = a^x
+				vwx = b^y
+				y = c^y
+
+				Es gilt:
+				u v^i w x^i y ∈ L
+				Da |a| < |b|
+		Fall 2:
+			sonst
+			Nun sei:
+				u = λ
+				vwx = Erster Buchstabe von w
+				y = Rest von w
+
+				Es gilt:
+				u v^i w x^i y ∈ L
+				Da entweder der erste Buchstabe kein a ist und
+				wir somit irgendeinen anderen Buchstaben pumpen.
+				Oder der erste Buchstabe ist ein a aber es sind
+				weniger b/c's als a's oder unterschiedliche
+				b/c's. Somit pumpen wir auf jeden Fall mehr a's
+				als b/c's oder das Wort hat sowieso eine andere
+				Form als "a^x b^y c^z".
+
+	Die Sprache ist jedoch nicht regulär, da reguläre Sprachen abgeschlossen
+	bezüglich des Komplements sind, { a^i b^i c^i } ist jedoch nicht regulär
+	wie in der Vorlesung bewiesen (trivial), somit das Komplement auch
+	nicht.
+
+b)
+	Die Sprache über einem Klammerpaar, wobei die maximale Tiefe 6 ist, ist
+	regulär, denn folgende Grammatik erkennt die Sprache:
+		G = (V, Σ, P, S)
+		V = { S, X1, X2, X3, X4, X5, X6 }
+		Σ = { (, ) }
+		P = {
+			S -> λ | ( X1
+			X1 -> ) S | ( X2
+			X2 -> ) X1 | ( X3
+			X3 -> ) X2 | ( X4
+			X4 -> ) X3 | ( X5
+			X5 -> ) X4 | ( X6
+			X6 -> ) X5
+		}
+
+	Eine Sprache ist leer oder es ist eine öffnende Klammer gefolgt von
+	einem Klammerpaar erster Stufe.
+	Ein Klammerpaar erster Stufe ist entweder die schließende Klammer
+	gefolgt von der Sprache selbst, oder eine öffnende Klammer mit einem
+	Klammerpaar zweiter Stufe.
+	Dies geht so weiter bis zum Klammerpaar 6. Stufe, welches nur eine
+	schließende Klammer sein kann, weil hier keine weitere Klammer erlaubt
+	ist.
+
+	Somit ist die Sprache kontextfrei und regulär, denn jede reguläre
+	Sprache ist auch kontextfrei.
+
+c)
+	Die gegebene Sprache ist regulär und somit auch kontextfrei. Folgender
+	endlicher Automat erkennt die Sprache:
+
+		     l       l
+		 X1 ---- X2 ---- X3
+		v|h  r  h|v  r  v|h
+		 X4 ---- S  ---- X5
+		v|h  l  h|v  l  v|h
+		 X6 ---- X7 ---- X8
+		     r       r
+
+		(siehe Blatt)
+		M = (Z, Σ, δ, S, { S })
+
+d)
+	L = { a^i ∙ b^j ∙ c^(i*j) | i,j ≥ 0 }
+	Die Sprache ist nicht kontextfrei und nicht regulär, denn sie ist nicht
+	pumpbar:
+		Sei n ∈ N:
+		Sei z = a^i ∙ b^i ∙ c^(i*j)
+		⇒ |z| ≥ n
+
+		Bei jeder möglichen Zerlegung können wir als Faktor 0 nehmen und
+		das Wort liegt nicht mehr in der Sprache:
+
+		Fall 1:
+			uvw = a^x mit x > 0
+			Dann gilt:
+				u ∙ v^0 ∙ w ∙ x^0 ∙ z !∈ L
+			Da:
+				|a| ≠ |b|
+		Fall 2:
+			uvw = a^x ∙ b^y mit x,y > 0
+			Dann gilt:
+				u ∙ v^0 ∙ w ∙ x^0 ∙ z !∈ L
+			Da:
+				|a| * |b| ≠ |c|
+		Fall 3:
+			uvw = b^x mit x > 0
+			Dann gilt:
+				u ∙ v^0 ∙ w ∙ x^0 ∙ z !∈ L
+			Da:
+				|a| ≠ |b|
+		Fall 4:
+			uvw = b^x ∙ c^y mit x,y > 0
+			Dann gilt:
+				u ∙ v^0 ∙ w ∙ x^0 ∙ z !∈ L
+			Da:
+				|a| ≠ |b|
+		Fall 5:
+			uvw = c^x mit x > 0
+			Dann gilt:
+				u ∙ v^0 ∙ w ∙ x^0 ∙ z !∈ L
+			Da:
+				|a| * |b| ≠ |c|
+
+	Somit ist L nicht kontextfrei und somit auch nicht regulär.
