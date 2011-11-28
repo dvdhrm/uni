@@ -1,10 +1,40 @@
 ;; Die ersten drei Zeilen dieser Datei wurden von DrRacket eingefügt. Sie enthalten Metadaten
 ;; über die Sprachebene dieser Datei in einer Form, die DrRacket verarbeiten kann.
-#reader(lib "DMdA-vanilla-reader.ss" "deinprogramm")((modname insertion-sort) (read-case-sensitive #f) (teachpacks ()) (deinprogramm-settings #(#f write repeating-decimal #f #t none explicit #f ())))
+#reader(lib "DMdA-vanilla-reader.ss" "deinprogramm")((modname insertion-sort) (read-case-sensitive #f) (teachpacks ((lib "image2.ss" "teachpack" "deinprogramm"))) (deinprogramm-settings #(#f write repeating-decimal #f #t none explicit #f ((lib "image2.ss" "teachpack" "deinprogramm")))))
 ; Felix Bartusch / David Herrmann
 
-; insert-sorted - insert number into sorted list
-(: insert-sorted (real (list-of real) -> (list-of real)))
+; sorted? - Return true if list is sorted ascendingly
+(: sorted? ((list-of real) -> boolean))
+
+(check-expect (sorted? empty) #t)
+(check-expect (sorted? (make-pair 5
+                                  (make-pair 10
+                                             (make-pair 9
+                                                        empty)))) #f)
+(check-expect (sorted? (make-pair 5
+                                  (make-pair 10
+                                             (make-pair 10
+                                                        empty)))) #t)
+
+(define sorted?
+  (lambda (list)
+    (cond ((empty? list)
+           #t)
+          ((pair? list)
+           (let ((r (rest list)))
+             (cond ((empty? r)
+                    #t)
+                   ((pair? r)
+                    (and (<= (first list)
+                             (first r))
+                         (sorted? r)))))))))
+
+; insert-sorted expects a sorted list as second argument
+(define sorted-list
+  (signature (predicate sorted?)))
+
+; insert-sorted - insert number into sorted list, the new list is sorted, too
+(: insert-sorted (real sorted-list -> sorted-list))
 
 (check-within (insert-sorted 0 empty) (make-pair 0 empty) 0.001)
 (check-within (insert-sorted 0 (make-pair 5
