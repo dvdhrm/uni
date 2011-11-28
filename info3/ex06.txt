@@ -6,9 +6,9 @@ a)
 	V = { S }
 	Σ = { (, ), [, ] }
 	P = {
-		S -> ( S ) S
-		S -> [ S ] S
-		S -> λ
+		S → S ( S ) S
+		S → S [ S ] S
+		S → λ
 	}
 
 	Eine korrekte Klammerung besteht immer aus einem Auf-Zu Klammerpaar.
@@ -23,24 +23,24 @@ b)
 	V = { S, X, Y }
 	Σ = { a, b }
 	P = {
-		S -> bX | aY | λ
-		X -> SaSaS
-		Y -> SaSbS
-		Y -> SbSaS
+		S → bX | aY | λ
+		X → SaSaS
+		Y → SaSbS
+		Y → SbSaS
 	}
 
 	Ein Wort fängt entweder mit einem "b" an gefolgt von einem Ausdruck, der
 	wieder 2 a's enthält (X). Oder es fängt mit "a" an gefolgt von einem
 	Ausdruck, der ein "a" und "b" enthält (Y).
 	Sowohl X als auch Y können aber wiederum wieder eingepackt sein in
-	Ausdrücke, die doppelt so viele a's wie b's haben.
+	Ausdrücke, die doppelt so viele a's wie b's haben (S).
 
 c)
 	Die Menge aller Wörter in { a, b }*, so dass die Anzahl der a's vor dem
 	letzten "b" gleich der Anzahl an b's nach dem ersten "a" ist.
 
 	G = (V, Σ, S, P)
-	V = { }
+	V = { S, X }
 	Σ = { a, b }
 	P = {
 		S -> bS
