@@ -34,12 +34,15 @@
 (define double-every-other-number
   (lambda (xs)
     (cond ((empty? xs) empty)
-          ((pair? xs) (if (empty? (rest xs))
-                          (make-pair (first xs)
-                                     empty)
-                          (make-pair (first xs)
-                                     (make-pair (* 2 (first (rest xs)))
-                                                (double-every-other-number (rest (rest xs))))))))))
+          ((pair? xs)
+           (let ((r (rest xs))
+                 (f (first xs)))
+             (if (empty? r)
+                 (make-pair f
+                            empty)
+                 (make-pair f
+                            (make-pair (* 2 (first r))
+                                       (double-every-other-number (rest r))))))))))
 
 ; map-digits nimmt eine Liste von natuerlichen Zahlen und schreibt die Ziffern jeder Zahl in eine Liste
 ; Heraus kommt eine Liste von Listen
@@ -70,4 +73,9 @@
 (check-expect (luhn-check 6789) #f)
 (define luhn-check
   (lambda (n)
-    (= 0 (modulo (sum (concat (map-digits (double-every-other-number (digits n)))))10))))
+    (= 0 (modulo (sum
+                  (concat
+                   (map-digits
+                    (double-every-other-number
+                     (digits n)))))
+                 10))))
