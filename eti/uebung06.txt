@@ -1,0 +1,245 @@
+ETI - Uebung 6 - David Herrmann
+
+Aufgabe 23:
+	Kodierung anhand der Eingabe:
+		x2 x1 x0 | Fig
+		 0  0  0 |  1 (abef)
+		 0  0  1 |  2 (abde)
+		 0  1  0 |  3 (bdef)
+		 0  1  1 |  4 (bde)
+		 1  0  0 |  5 (bef)
+		 1  0  1 |  6 (abce)
+		 1  1  0 |  7 (abe)
+		 1  1  1 |  8 (bce)
+
+	Ansteuerungsfunktion a:
+		a = (¬x0 ∧ ¬x1 ∧ ¬x2) ∨ (x0 ∧ ¬x1 ∧ ¬x2) ∨
+			(x0 ∧ ¬x1 ∧ x2) ∨ (¬x0 ∧ x1 ∧ x2)
+
+		KV Diagramm:
+		    |¬x1 | x1 | x1 |¬x1 |
+		    +----+----+----+----+
+		 x2 |  0 |  1 |  0 |  1 |
+		    +----+----+    |    +
+		¬x2    1 |  0    0 |  1
+		    +----+----+----+----+
+		    |¬x0 |¬x0 | x0 | x0 |
+
+		Minimiert:
+			a = (x0 ¬x1) ∨ (¬x1 ∧ ¬x2) ∨ (¬x0 ∧ x1 ∧ x2)
+
+	Ansteuerungsfunktion b:
+		b wird immer angesteuert!
+
+		Minimiert:
+			b = 1
+
+	Ansteuerungsfunktion c:
+		c = (x0 ∧ ¬x1 ∧ x2) ∨ (x0 ∧ x1 ∧ x2)
+
+		    |¬x1 | x1 | x1 |¬x1 |
+		    +----+----+----+----+
+		 x2 |  0    0 |  1    1 |
+		    |         +---------+
+		¬x2 |  0    0    0    0 |
+		    +----+----+----+----+
+		    |¬x0 |¬x0 | x0 | x0 |
+
+		Minimiert:
+			c = (x0 ∧ x2)
+
+	Ansteuerungsfunktion d:
+		d = (x0 ∧ ¬x1 ∧ ¬x2) ∨ (¬x0 ∧ x1 ∧ ¬x2) ∨ (x0 ∧ x1 ∧ ¬x2)
+
+		    |¬x1 | x1 | x1 |¬x1 |
+		    +----+----+----+----+
+		 x2 |  0    0    0    0 |
+		    |    +----+----+----+
+		¬x2 |  0 |  1    1    1 |
+		    +----+----+----+----+
+		    |¬x0 |¬x0 | x0 | x0 |
+
+		Minimiert:
+			d = (x1 ∧ ¬x2) ∨ (x0 ∧ ¬x2)
+
+	Ansteuerungsfunktion e:
+		e wird immer angesteuert!
+
+		Minimiert:
+			e = 1
+
+	Ansteuerungsfunktion f:
+		f = (¬x0 ∧ ¬x1 ∧ ¬x2) ∨ (¬x0 ∧ x1 ¬x2) ∨ (¬x0 ∧ ¬x1 ∧ x2)
+
+		    |¬x1 | x1 | x1 |¬x1 |
+		    +----+----+----+----+
+		 x2 |  1 |  0    0    0 |
+		    |    +----+         |
+		¬x2 |  1    1 |  0    0 |
+		    +----+----+----+----+
+		    |¬x0 |¬x0 | x0 | x0 |
+
+		Minimiert:
+			f = (¬x0 ∧ ¬x1) ∨ (¬x0 ∧ ¬x2)
+
+Aufgabe 24:
+	y = (¬a ∧ b ∧ ¬c ∧ ¬d) ∨ (¬a ∧ ¬b ∧ d ∧ ¬e) ∨ (a ∧ b ∧ c) ∨
+		(¬(a ∨ b) ∧ c ∧ ¬e) ∨ (¬b ∧ c ∧ d ∧ e) ∨ (a ∧ ¬b ∧ ¬c ∧ e)
+
+	NAND:
+		helper: ¬x = (x ↑ x) ⇒ x = ¬(x ↑ x)
+
+		y = 	((a ↑ a) ∧ b ∧ (c ↑ c) ∧ (d ↑ d)) ∨
+			((a ↑ a) ∧ (b ↑ b) ∧ d ∧ (e ↑ e)) ∨
+			(a ∧ b ∧ c) ∨
+			((a ↑ a) ∧ (b ↑ b) ∧ c ∧ (e ↑ e)) ∨
+			((b ↑ b) ∧ c ∧ d ∧ e) ∨
+			(a ∧ (b ↑ b) ∧ (c ↑ c) ∧ e)
+		y = 	¬(¬(
+				((a ↑ a) ∧ b ∧ (c ↑ c) ∧ (d ↑ d)) ∨
+				((a ↑ a) ∧ (b ↑ b) ∧ d ∧ (e ↑ e)) ∨
+				(a ∧ b ∧ c) ∨
+				((a ↑ a) ∧ (b ↑ b) ∧ c ∧ (e ↑ e)) ∨
+				((b ↑ b) ∧ c ∧ d ∧ e) ∨
+				(a ∧ (b ↑ b) ∧ (c ↑ c) ∧ e)
+			))
+		y = 	¬(
+				¬((a ↑ a) ∧ b ∧ (c ↑ c) ∧ (d ↑ d)) ∧
+				¬((a ↑ a) ∧ (b ↑ b) ∧ d ∧ (e ↑ e)) ∧
+				¬(a ∧ b ∧ c) ∧
+				¬((a ↑ a) ∧ (b ↑ b) ∧ c ∧ (e ↑ e)) ∧
+				¬((b ↑ b) ∧ c ∧ d ∧ e) ∧
+				¬(a ∧ (b ↑ b) ∧ (c ↑ c) ∧ e)
+			)
+		y = 	¬(
+				((a ↑ a) ↑ b ↑ (c ↑ c) ↑ (d ↑ d)) ∧
+				((a ↑ a) ↑ (b ↑ b) ↑ d ↑ (e ↑ e)) ∧
+				(a ↑ b ↑ c) ∧
+				((a ↑ a) ↑ (b ↑ b) ↑ c ↑ (e ↑ e)) ∧
+				((b ↑ b) ↑ c ↑ d ↑ e) ∧
+				(a ↑ (b ↑ b) ↑ (c ↑ c) ↑ e)
+			)
+		y = 	((a ↑ a) ↑ b ↑ (c ↑ c) ↑ (d ↑ d)) ↑
+			((a ↑ a) ↑ (b ↑ b) ↑ d ↑ (e ↑ e)) ↑
+			(a ↑ b ↑ c) ↑
+			((a ↑ a) ↑ (b ↑ b) ↑ c ↑ (e ↑ e)) ↑
+			((b ↑ b) ↑ c ↑ d ↑ e) ↑
+			(a ↑ (b ↑ b) ↑ (c ↑ c) ↑ e)
+
+	NOR: ↓
+		y = (¬a ∧ b ∧ ¬c ∧ ¬d) ∨ (¬a ∧ ¬b ∧ d ∧ ¬e) ∨ (a ∧ b ∧ c) ∨
+			(¬(a ∨ b) ∧ c ∧ ¬e) ∨ (¬b ∧ c ∧ d ∧ e) ∨ (a ∧ ¬b ∧ ¬c ∧ e)
+		y = 	¬(a ∨ ¬b ∨ c ∨ d) ∨ ¬(a ∨ b ∨ ¬d ∨ e) ∨ ¬(¬a ∨ ¬b ∨ ¬c) ∨
+			¬(a ∨ b ∨ ¬c ∨ e) ∨ ¬(b ∨ ¬c ∨ ¬d ∨ ¬e) ∨
+			¬(¬a ∨ b ∨ c ∨ ¬e)
+		y = 	¬(a ∨ (b ↓ b) ∨ c ∨ d) ∨ ¬(a ∨ b ∨ (d ↓ d) ∨ e) ∨
+			¬((a ↓ a) ∨ (b ↓ b) ∨ (c ↓ c)) ∨
+			¬(a ∨ b ∨ (c ↓ c) ∨ e) ∨
+			¬(b ∨ (c ↓ c) ∨ (d ↓ d) ∨ (e ↓ e)) ∨
+			¬((a ↓ a) ∨ b ∨ c ∨ (e ↓ e))
+		y = 	(a ↓ (b ↓ b) ↓ c ↓ d) ∨ (a ↓ b ↓ (d ↓ d) ↓ e) ∨
+			((a ↓ a) ↓ (b ↓ b) ↓ (c ↓ c)) ∨
+			(a ↓ b ↓ (c ↓ c) ↓ e) ∨
+			(b ↓ (c ↓ c) ↓ (d ↓ d) ↓ (e ↓ e)) ∨
+			((a ↓ a) ↓ b ↓ c ↓ (e ↓ e))
+		y =	¬(¬(
+				(a ↓ (b ↓ b) ↓ c ↓ d) ∨
+				(a ↓ b ↓ (d ↓ d) ↓ e) ∨
+				((a ↓ a) ↓ (b ↓ b) ↓ (c ↓ c)) ∨
+				(a ↓ b ↓ (c ↓ c) ↓ e) ∨
+				(b ↓ (c ↓ c) ↓ (d ↓ d) ↓ (e ↓ e)) ∨
+				((a ↓ a) ↓ b ↓ c ↓ (e ↓ e))
+			))
+		y =	¬(
+				(a ↓ (b ↓ b) ↓ c ↓ d) ↓
+				(a ↓ b ↓ (d ↓ d) ↓ e) ↓
+				((a ↓ a) ↓ (b ↓ b) ↓ (c ↓ c)) ↓
+				(a ↓ b ↓ (c ↓ c) ↓ e) ↓
+				(b ↓ (c ↓ c) ↓ (d ↓ d) ↓ (e ↓ e)) ↓
+				((a ↓ a) ↓ b ↓ c ↓ (e ↓ e))
+			)
+		y =	(
+				(a ↓ (b ↓ b) ↓ c ↓ d) ↓
+				(a ↓ b ↓ (d ↓ d) ↓ e) ↓
+				((a ↓ a) ↓ (b ↓ b) ↓ (c ↓ c)) ↓
+				(a ↓ b ↓ (c ↓ c) ↓ e) ↓
+				(b ↓ (c ↓ c) ↓ (d ↓ d) ↓ (e ↓ e)) ↓
+				((a ↓ a) ↓ b ↓ c ↓ (e ↓ e))
+			) ↓ (
+				(a ↓ (b ↓ b) ↓ c ↓ d) ↓
+				(a ↓ b ↓ (d ↓ d) ↓ e) ↓
+				((a ↓ a) ↓ (b ↓ b) ↓ (c ↓ c)) ↓
+				(a ↓ b ↓ (c ↓ c) ↓ e) ↓
+				(b ↓ (c ↓ c) ↓ (d ↓ d) ↓ (e ↓ e)) ↓
+				((a ↓ a) ↓ b ↓ c ↓ (e ↓ e))
+			)
+
+Aufgabe 25:
+a)
+	Siehe flipflop.png.
+
+b)
+	Zustandsfolgetabelle: (Q2 = ¬Q1)
+		 S | R | C | Q1
+		---+---+---+----
+		 0 | 0 | 0 | bleibt
+		 0 | 1 | 0 | bleibt
+		 1 | 0 | 0 | bleibt
+		 1 | 1 | 0 | bleibt
+		---+---+---+----
+		 0 | 0 | 1 | bleibt
+		 0 | 1 | 1 | 0 speichert
+		 1 | 0 | 1 | 1 speichert
+		 1 | 1 | 1 | 0 speichert
+
+	Wenn wir die Zeilen mit C=0 streichen ist dies bereits die
+	charakteristische Gleichung des RS-Flipflops mit der Ausnahme der
+	letzten Zeile. Diese wäre normalerweise meta-stabil ist hier aber
+	definiert, da eine "Sicherung" davor existiert.
+
+c)
+	Der Vorteil dieser Schaltung gegenüber des normalen taktgesteuerten
+	RS-Flipflops ist, dass hier niemals 1:1 am FlipFlop intern anliegt.
+	Stattdessen ist 1:1 äquivalent zu 0:1 (reset) und somit wird der
+	meta-stabile Zustand vermieden und stattdessen resettet.
+
+Aufgabe 26:
+a)
+	Siehe hazard.png. Y ist der Ausgang, H1 und H2 sind die beiden Eingänge
+	vor dem letzten OR (waren nur zur Hilfe für mich).
+	Über die ersten 3 Takte kann ich nichts sagen, da bis dahin noch kein
+	Impuls bis zum Ausgang kam. Das kann aber auch ignoriert werden, da in
+	den ersten 3 Takten nichts spannendes passiert.
+
+b)
+	Währe die Laufzeit optimal (=0) müsste Y immer 1 sein. Mit der gegebenen
+	Laufzeit ist Y aber in den Takten 8 und 9 =0. Das Problem ist, dass die
+	Laufzeit über den unteren Weg zum letzten OR länger ist als der über den
+	oberen Weg. Besonders die Veränderung vom B hat oben eine Laufzeit von 1
+	und unten von 3.
+	Nun wird aber einmal der obere Weg 0 und der untere 1. Die 0 oben ist
+	aber schneller beim letzten OR als die 1 von unten. Folglich ist für 2
+	Takte 0/0 am letzten OR, was zu 0 am Y wird.
+	Diese Race-Condition nennt man Hazard...
+
+c)
+	Die gegebene Funktion ist:
+		y = (¬a ∧ b) ∨ ((c ∧ ¬b) ∨ (¬c ∧ ¬b))
+	Minimieren mit normalen booleschen Umformungen:
+		y = (¬a ∧ b) ∨ (¬b ∧ (c ∨ ¬c))
+		y = (¬a ∧ b) ∨ ¬b
+		y = ¬b ∨ (b ∧ ¬a)
+		y = ¬b ∨ ¬a
+		y = ¬(a ∧ b)
+
+d)
+	Die hazard-freie Schaltung ist:
+	┌──────────────────────────────────┐
+	│            ___                   │
+	│ A---------|   |      _           │
+	│           | & |---- |1|∙ ----- Y │
+	│ B---------|___|      ‾           │
+	│                                  │
+	└──────────────────────────────────┘
+	Diese ist hazard-frei, da die Laufzeiten von A-B zum AND gleich sind und
+	danach nur noch ein Pfad existiert.
