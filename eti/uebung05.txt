@@ -112,6 +112,162 @@ Aufgabe 19:
 	Kombinationen noch einmal finden muss.
 
 Aufgabe 20:
+1)
+	Aiken / BCD Konvertierungstabelle:
+		      Aiken | BCD
+		------------+------
+		Var-y: 3210 | 3210 :Var-x
+		------------+------
+		       0000 | 0000
+		       0001 | 0001
+		       0010 | 0010
+		       0011 | 0011
+		       0100 | 0100
+		       1011 | 0101
+		       1100 | 0110
+		       1101 | 0111
+		       1110 | 1000
+		       1111 | 1001
+	Es werden 4 Bits für Ein- und Ausgabe benötigt.
+	Von BCD nach Aiken in der Tabelle von rechts nach links: x → y
+
+2)
+	Aiken y0 = 1 wenn:
+		x3 x2 x1 x0
+		 0  0  0  1
+		 0  0  1  1
+		 0  1  0  1
+		 0  1  1  1
+		 1  0  0  1
+
+	    |¬x1 | x1 | x1 |¬x1 |
+	    +----+----+----+----+
+	¬x2 |  0    0    1    1 |¬x3
+	    |                   |
+	 x2 |  0    0    1    1 |¬x3
+	    |                   |
+	 x2 |  0    0    0    0 | x3
+	    |                   |
+	¬x2 |  0    0    0    1 | x3
+	    +----+----+----+----+
+	    |¬x0 |¬x0 | x0 | x0 |
+
+	 Optimiert:
+	    |¬x1 | x1 | x1 |¬x1 |
+	    +----+----+----+    +
+	¬x2 |  0    0 |  1 |  1 |¬x3
+	    |         |      -- |
+	 x2 |  0    0 |  1    1 |¬x3
+	    |         +---------+
+	 x2 |  0    0    0    0 | x3
+	    |              +----+
+	¬x2 |  0    0    0 |  1 | x3
+	    +----+----+----+    +
+	    |¬x0 |¬x0 | x0 | x0 |
+
+	y0 = (¬x3 ∧ x0) ∨ (¬x2 ∧ ¬x1 ∧ x0)
+
+	Aiken y1 = 1 wenn
+		x3 x2 x1 x0
+		 0  0  1  0
+		 0  0  1  1
+		 0  1  0  1
+		 1  0  0  0
+		 1  0  0  1
+
+	    |¬x1 | x1 | x1 |¬x1 |
+	    +----+----+----+----+
+	¬x2 |  0    1    1    0 |¬x3
+	    |                   |
+	 x2 |  0    0    0    1 |¬x3
+	    |                   |
+	 x2 |  0    0    0    0 | x3
+	    |                   |
+	¬x2 |  1    0    0    1 | x3
+	    +----+----+----+----+
+	    |¬x0 |¬x0 | x0 | x0 |
+
+	Optimiert
+	    |¬x1 | x1 | x1 |¬x1 |
+	    +----+----+----+----+
+	¬x2 |  0 |  1    1 |  0 |¬x3
+	    |    +---------+    |
+	 x2 |  0    0    0    1 |¬x3
+	    |                   |
+	 x2 |  0    0    0    0 | x3
+	    +----+         +----+
+	¬x2    1 |  0    0 |  1   x3
+	    +----+----+----+----+
+	    |¬x0 |¬x0 | x0 | x0 |
+
+	y1 = (¬x2 ∧ ¬x3 ∧ x1) ∨ (¬x2 ∧ x3 ∧ ¬x1) ∨ (¬x3 ∧ ¬x1 ∧ x2 ∧ x0)
+
+	Aiken y2 = 1 wenn:
+		x3 x2 x1 x0
+		 0  1  0  0
+		 0  1  1  0
+		 0  1  1  1
+		 1  0  0  0
+		 1  0  0  1
+
+	    |¬x1 | x1 | x1 |¬x1 |
+	    +----+----+----+----+
+	¬x2 |  0    0    0    0 |¬x3
+	    |                   |
+	 x2 |  1    1    1    0 |¬x3
+	    |                   |
+	 x2 |  0    0    0    0 | x3
+	    |                   |
+	¬x2 |  1    0    0    1 | x3
+	    +----+----+----+----+
+	    |¬x0 |¬x0 | x0 | x0 |
+
+	Optimiert
+	    |¬x1 | x1 | x1 |¬x1 |
+	    +----+----+----+----+
+	¬x2 |  0    0    0    0 |¬x3
+	    +----+----+----+    |
+	 x2 |  1 ;  1 ;  1 |  0 |¬x3
+	    +----+----+----+    |
+	 x2 |  0    0    0    0 | x3
+	    +----+         +----+
+	¬x2    1 |  0    0 |  1   x3
+	    +----+----+----+----+
+	    |¬x0 |¬x0 | x0 | x0 |
+
+	y2 = (x3 ∧ ¬x2 ∧ ¬x1) ∨ (x2 ∧ ¬x3 ∧ x1) ∨ (x2 ∧ ¬x3 ∧ ¬x0)
+
+	Aiken y3 = 1 wenn:
+		x3 x2 x1 x0
+		 0  1  0  1
+		 0  1  1  0
+		 0  1  1  1
+		 1  0  0  0
+		 1  0  0  1
+
+	    |¬x1 | x1 | x1 |¬x1 |
+	    +----+----+----+----+
+	¬x2 |  0    0    0    0 |¬x3
+	    |    +--------------+
+	 x2 |  0 |  1 ;  1 ;  1 |¬x3
+	    |    +--------------+
+	 x2 |  0    0    0    0 | x3
+	    +----+         +----+
+	¬x2   1  |  0    0 |  1   x3
+	    +----+----+----+----+
+	    |¬x0 |¬x0 | x0 | x0 |
+
+	y3 = (x3 ∧ ¬x2 ∧ ¬x1) ∨ (¬x3 ∧ x2 ∧ x1) ∨ (¬x3 ∧ x2 ∧ x0)
+
+4)
+	Das MCQ Verfahren hätte keinen Vorteil verschafft. Der Grund dafür ist,
+	dass das Verfahren das gleiche Problem löst, aber für wenige Variablen
+	bereits eine exponentielle Laufzeit hat, während KV-Diagramme vom
+	Menschen sehr einfach gelöst werden können, besonders, wenn es sich nur
+	um sehr wenige Variablen handelt, wie hier.
+	Außerdem wurden hier bereits alle Primterme gefunden. Bei keinem der
+	KV-Diagramme sind andere Kombinationen möglich, somit hätte beide
+	Verfahren sowieso auf dasselbe Ergebnis geführt.
 
 Aufgabe 21:
 	Siehe circuit-3.png
