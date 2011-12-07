@@ -200,7 +200,7 @@ int main(int argc, char **argv)
 	turing_machine_print(mach);
 
 	printf("\nSimulating turing machine:\n\n");
-	ret = turing_machine_simulate_limited(mach, band, 0, verbose);
+	ret = turing_machine_simulate_limited(mach, band, 0, verbose ? 2 : 1);
 	if (ret) {
 		printf("Cannot simulate turing machine: %d\n", ret);
 		goto err_mach;

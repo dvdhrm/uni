@@ -15,6 +15,48 @@
 #include <string.h>
 #include "turing.h"
 
+struct turing_state {
+	unsigned long ref;
+	char *name;
+};
+
+struct turing_transition {
+	unsigned long ref;
+	struct turing_state *from;
+	struct turing_state *to;
+	char read;
+	char write;
+	int dir;
+};
+
+struct turing_band {
+	size_t size;
+	size_t len;
+	char *buf;
+
+	char blank;
+	size_t pos;
+};
+
+struct turing_machine {
+	unsigned long ref;
+
+	size_t count_z;
+	struct turing_state **list_z;
+
+	size_t count_sigma;
+	char *sigma;
+	size_t count_gamma;
+	char *gamma;
+
+	size_t delta_count;
+	struct turing_transition **delta;
+
+	struct turing_state *z0;
+	char blank;
+	struct turing_state *e0;
+};
+
 int turing_state_new(struct turing_state **out, const char *name)
 {
 	struct turing_state *state;
@@ -183,6 +225,22 @@ void turing_band_free(struct turing_band *band)
 
 	free(band->buf);
 	free(band);
+}
+
+char *turing_band_get_buf(struct turing_band *band)
+{
+	if (!band)
+		return NULL;
+
+	return band->buf;
+}
+
+size_t turing_band_get_len(struct turing_band *band)
+{
+	if (!band)
+		return 0;
+
+	return band->len;
 }
 
 static int turing_band_push(struct turing_band *band)
@@ -694,7 +752,7 @@ static struct turing_transition *find_transition(struct turing_machine *mach,
 }
 
 int turing_machine_simulate_limited(struct turing_machine *mach,
-		struct turing_band *band, unsigned long steps, bool verbose)
+		struct turing_band *band, unsigned long steps, int verbose)
 {
 	unsigned long step;
 	int ret = 0;
@@ -708,29 +766,33 @@ int turing_machine_simulate_limited(struct turing_machine *mach,
 		return -EINVAL;
 
 	current = mach->z0;
-	printf("Starting at: %s\n", current->name);
-	turing_band_print(band);
+	if (verbose > 0) {
+		printf("Starting at: %s\n", current->name);
+		turing_band_print(band);
+	}
 
 	for (step = 0; (step < steps) || !steps; ++step) {
-		if (!verbose && !(step % 1000000))
+		if (verbose == 1 && !(step % 1000000))
 			printf("Step %lu Band: %lu\n", step, band->len);
 
 		trans = find_transition(mach, current, band);
 		if (!trans || !trans->to) {
 			ret = -EINVAL;
-			printf("Cannot find matching transition\n");
+			if (verbose > 0)
+				printf("Cannot find matching transition\n");
 			break;
 		}
 
 		turing_band_write(band, trans->write);
 		ret = turing_band_move(band, trans->dir);
 		if (ret) {
-			printf("Band movement failed: %d\n", ret);
+			if (verbose > 0)
+				printf("Band movement failed: %d\n", ret);
 			break;
 		}
 		current = trans->to;
 
-		if (verbose) {
+		if (verbose > 1) {
 			printf("Transition: %s:%c -> %s:%c (%s)\n",
 						trans->from->name, trans->read,
 						trans->to->name, trans->write,
@@ -739,20 +801,23 @@ int turing_machine_simulate_limited(struct turing_machine *mach,
 		}
 
 		if (current == mach->e0) {
-			printf("Halt condition reached (%lu steps)\n",
+			if (verbose > 0)
+				printf("Halt condition reached (%lu steps)\n",
 								step + 1);
 			break;
 		}
 	}
 
-	turing_band_print(band);
+	if (verbose > 0)
+		turing_band_print(band);
 
-	if (step == steps) {
-		printf("Max steps limit reached (%lu)\n", steps);
-		ret = -E2BIG;
+	if (step >= steps) {
+		if (verbose > 0)
+			printf("Max steps limit reached (%lu)\n", steps);
+		ret = -EFAULT;
 	}
 
-	if (ret)
+	if (verbose > 0 && ret)
 		printf("Turing machine failed: %d\n", ret);
 
 	return ret;
@@ -761,5 +826,5 @@ int turing_machine_simulate_limited(struct turing_machine *mach,
 int turing_machine_simulate(struct turing_machine *mach,
 						struct turing_band *band)
 {
-	return turing_machine_simulate_limited(mach, band, 10000, true);
+	return turing_machine_simulate_limited(mach, band, 10000, 2);
 }
