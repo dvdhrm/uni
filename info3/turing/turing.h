@@ -5,10 +5,16 @@
 
 /*
  * This program implements a Turing Machine. It can simulate any kind of
- * configuration. You can set limits of maximal steps and maximal band length to
- * avoid halting problems.
+ * configuration. You can set limits of maximal steps to avoid halting
+ * problems.
  *
- * Two example configuration exists to simulate busy beavers of 3 and 4 states.
+ * On my Intel Atom this simulation runs about 5,000,000 steps per second. The
+ * stepper is optimized for speed and has only one lookup (transition lookup).
+ * The band is a simple array that is resized and moved and should be optimized
+ * further to allow smoother movements. This could probably speed up the
+ * simulation by a factor greater than 10.
+ *
+ * See the example for several busy-beaver sample machines.
  */
 
 #ifndef TURING_H
@@ -25,7 +31,7 @@
 
 struct turing_state {
 	unsigned long ref;
-	const char *name;
+	char *name;
 };
 
 enum turing_direction {
@@ -78,6 +84,16 @@ struct turing_machine {
 	struct turing_state *e0;
 };
 
+#define TURING_INIT_END { NULL, 0, NULL, 0, 0 }
+
+struct turing_init {
+	const char *from;
+	char read;
+	const char *to;
+	char write;
+	int dir;
+};
+
 int turing_state_new(struct turing_state **out, const char *name);
 void turing_state_ref(struct turing_state *state);
 void turing_state_unref(struct turing_state *state);
@@ -93,12 +109,16 @@ void turing_transition_set_rw(struct turing_transition *trans, char r, char w);
 void turing_transition_set_dir(struct turing_transition *trans, int dir);
 
 int turing_band_new(struct turing_band **out, const char *init, size_t len,
-								char blank);
+							size_t pos, char blank);
 void turing_band_free(struct turing_band *band);
+void turing_band_print(struct turing_band *band);
 
 int turing_machine_new(struct turing_machine **out, char blank);
 void turing_machine_ref(struct turing_machine *mach);
 void turing_machine_unref(struct turing_machine *mach);
+int turing_machine_init(struct turing_machine *mach, const char *sig,
+	size_t sig_size, const char *gam, size_t gam_size, const char *begin,
+			const char *end, const struct turing_init *init);
 int turing_machine_set_sigma(struct turing_machine *mach, const char *sigma,
 								size_t size);
 int turing_machine_set_gamma(struct turing_machine *mach, const char *gamma,
@@ -119,6 +139,6 @@ void turing_machine_print(struct turing_machine *mach);
 int turing_machine_simulate(struct turing_machine *mach,
 						struct turing_band *band);
 int turing_machine_simulate_limited(struct turing_machine *mach,
-	struct turing_band *band, unsigned long steps, unsigned long bsize);
+		struct turing_band *band, unsigned long steps, bool verbose);
 
 #endif /* TURING_H */

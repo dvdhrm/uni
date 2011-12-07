@@ -4,11 +4,8 @@
  */
 
 /*
- * This program implements a Turing Machine. It can simulate any kind of
- * configuration. You can set limits of maximal steps and maximal band length to
- * avoid halting problems.
- *
- * Two example configuration exists to simulate busy beavers of 3 and 4 states.
+ * This program implements a Turing Machine.
+ * See header file for more information and benchmarks.
  */
 
 #include <errno.h>
@@ -21,12 +18,13 @@
 int turing_state_new(struct turing_state **out, const char *name)
 {
 	struct turing_state *state;
-	size_t size;
+	size_t size, nlen;
 
 	if (!out)
 		return -EINVAL;
 
-	size = strlen(name) + 1 + sizeof(*state);
+	nlen = strlen(name);
+	size = nlen + 1 + sizeof(*state);
 	state = malloc(size);
 	if (!state)
 		return -ENOMEM;
@@ -34,6 +32,7 @@ int turing_state_new(struct turing_state **out, const char *name)
 	memset(state, 0, size);
 	state->ref = 1;
 	state->name = (void*)(((char*)state) + sizeof(*state));
+	memcpy(state->name, name, nlen);
 
 	*out = state;
 	return 0;
@@ -137,18 +136,17 @@ void turing_transition_set_dir(struct turing_transition *trans, int dir)
 }
 
 int turing_band_new(struct turing_band **out, const char *init, size_t len,
-								char blank)
+							size_t pos, char blank)
 {
 	struct turing_band *band;
 	char *buf;
+	size_t i;
 
-	if (!out || (!init && len))
+	if (!out || pos >= len)
 		return -EINVAL;
 
-	if (!len) {
-		init = &blank;
+	if (!len)
 		len = 1;
-	}
 
 	band = malloc(sizeof(*band));
 	if (!band)
@@ -161,12 +159,18 @@ int turing_band_new(struct turing_band **out, const char *init, size_t len,
 	}
 
 	memset(band, 0, sizeof(*band));
-	memcpy(buf, init, len);
 	band->size = 2 * len;
 	band->len = len;
 	band->buf = buf;
-	band->pos = 0;
+	band->pos = pos;
 	band->blank = blank;
+
+	if (init) {
+		memcpy(buf, init, len);
+	} else {
+		for (i = 0; i < band->len; ++i)
+			band->buf[i] = blank;
+	}
 
 	*out = band;
 	return 0;
@@ -296,6 +300,8 @@ void turing_band_print(struct turing_band *band)
 
 	printf(">> ");
 	for (i = 0; i < band->len; ++i) {
+		if (i == band->pos)
+			printf("|");
 		printf("%c", band->buf[i]);
 	}
 	printf("\n");
@@ -351,6 +357,113 @@ void turing_machine_unref(struct turing_machine *mach)
 	free(mach->sigma);
 	free(mach->gamma);
 	free(mach);
+}
+
+static struct turing_state *find_state(struct turing_machine *mach,
+							const char *name)
+{
+	size_t i;
+
+	for (i = 0; i < mach->count_z; ++i) {
+		if (!strcmp(mach->list_z[i]->name, name)) {
+			turing_state_ref(mach->list_z[i]);
+			return mach->list_z[i];
+		}
+	}
+
+	return NULL;
+}
+
+int turing_machine_init(struct turing_machine *mach, const char *sig,
+	size_t sig_size, const char *gam, size_t gam_size, const char *begin,
+			const char *end, const struct turing_init *init)
+{
+	int ret;
+	struct turing_state *from, *to;
+	const struct turing_init *iter;
+	struct turing_transition *trans;
+	size_t i;
+
+	ret = turing_machine_set_sigma(mach, sig, sig_size);
+	if (ret)
+		return ret;
+
+	ret = turing_machine_set_gamma(mach, gam, gam_size);
+	if (ret)
+		return ret;
+
+	for (i = 0; init[i].from; ++i) {
+		iter = &init[i];
+
+		from = find_state(mach, iter->from);
+		if (!from) {
+			ret = turing_state_new(&from, iter->from);
+			if (ret)
+				return ret;
+
+			ret = turing_machine_add_state(mach, from);
+			if (ret) {
+				turing_state_unref(from);
+				return ret;
+			}
+		}
+
+		to = find_state(mach, iter->to);
+		if (!to) {
+			ret = turing_state_new(&to, iter->to);
+			if (ret) {
+				turing_state_unref(from);
+				return ret;
+			}
+
+			ret = turing_machine_add_state(mach, to);
+			if (ret) {
+				turing_state_unref(from);
+				turing_state_unref(to);
+				return ret;
+			}
+		}
+
+		ret = turing_transition_new(&trans);
+		if (ret) {
+			turing_state_unref(from);
+			turing_state_unref(to);
+			return ret;
+		}
+
+		turing_transition_set_from(trans, from);
+		turing_transition_set_to(trans, to);
+		turing_transition_set_rw(trans, iter->read, iter->write);
+		turing_transition_set_dir(trans, iter->dir);
+
+		ret = turing_machine_add_trans(mach, trans);
+		if (ret) {
+			turing_transition_unref(trans);
+			turing_state_unref(from);
+			turing_state_unref(to);
+			return ret;
+		}
+
+		turing_transition_unref(trans);
+		turing_state_unref(from);
+		turing_state_unref(to);
+	}
+
+	from = find_state(mach, begin);
+	if (!from)
+		return ret;
+
+	turing_machine_set_begin(mach, from);
+	turing_state_unref(from);
+
+	from = find_state(mach, end);
+	if (!from)
+		return ret;
+
+	turing_machine_set_end(mach, from);
+	turing_state_unref(from);
+
+	return 0;
 }
 
 int turing_machine_set_sigma(struct turing_machine *mach, const char *sigma,
@@ -521,26 +634,24 @@ void turing_machine_print(struct turing_machine *mach)
 		return;
 
 	printf("Turing-Machine: %p\n", mach);
-	printf("  count_z: %lu\n", mach->count_z);
-	printf("    list_z: ");
+
+	printf("    sigma (%lu): ", mach->count_sigma);
+	for (i = 0; i < mach->count_sigma; ++i)
+		printf("%c ", mach->sigma[i]);
+	printf("\n");
+
+	printf("    gamma (%lu): ", mach->count_gamma);
+	for (i = 0; i < mach->count_gamma; ++i)
+		printf("%c ", mach->gamma[i]);
+	printf("\n");
+	printf("    blank: %c\n", mach->blank);
+
+	printf("    states (%lu): ", mach->count_z);
 	for (i = 0; i < mach->count_z; ++i)
 		printf("'%s'%s%s ", mach->list_z[i]->name,
-			(mach->z0 == mach->list_z[i]) ? "(z0)" : "",
-			(mach->e0 == mach->list_z[i]) ? "(e0)" : "");
+			(mach->z0 == mach->list_z[i]) ? ":begin" : "",
+			(mach->e0 == mach->list_z[i]) ? ":end" : "");
 	printf("\n");
-
-	printf("  count_sigma: %lu\n", mach->count_sigma);
-	printf("    sigma: ");
-	for (i = 0; i < mach->count_sigma; ++i)
-		printf("'%c':%hhd ", mach->sigma[i], mach->sigma[i]);
-	printf("\n");
-
-	printf("  count_gamma: %lu\n", mach->count_gamma);
-	printf("    gamma: ");
-	for (i = 0; i < mach->count_gamma; ++i)
-		printf("'%c':%hhd ", mach->gamma[i], mach->gamma[i]);
-	printf("\n");
-	printf("    blank: '%c':%hhd\n", mach->blank, mach->blank);
 
 	printf("  transitions:\n");
 	for (i = 0; i < mach->delta_count; ++i) {
@@ -555,20 +666,9 @@ void turing_machine_print(struct turing_machine *mach)
 			to = trans->to->name;
 		else
 			to = "<na>";
-
-		printf("    %p:\n", trans);
-		printf("      '%s' -> '%s'\n", from, to);
-		printf("      '%c':%hhd -> '%c':%hhd\n",
-						trans->read, trans->read,
-						trans->write, trans->write);
-		printf("       goto: %s\n", TURING_DIR2STR(trans->dir));
+		printf("    %s:%c -> %s:%c (%s)\n", from, trans->read,
+				to, trans->write, TURING_DIR2STR(trans->dir));
 	}
-}
-
-int turing_machine_simulate(struct turing_machine *mach,
-						struct turing_band *band)
-{
-	return turing_machine_simulate_limited(mach, band, 10000, 10000);
 }
 
 static struct turing_transition *find_transition(struct turing_machine *mach,
@@ -594,7 +694,7 @@ static struct turing_transition *find_transition(struct turing_machine *mach,
 }
 
 int turing_machine_simulate_limited(struct turing_machine *mach,
-	struct turing_band *band, unsigned long steps, unsigned long bsize)
+		struct turing_band *band, unsigned long steps, bool verbose)
 {
 	unsigned long step;
 	int ret = 0;
@@ -607,13 +707,14 @@ int turing_machine_simulate_limited(struct turing_machine *mach,
 	if (!mach->z0 || !mach->count_z || !mach->delta_count)
 		return -EINVAL;
 
-	printf("Simulating turing machine:\n\n");
-
 	current = mach->z0;
 	printf("Starting at: %s\n", current->name);
 	turing_band_print(band);
 
-	for (step = 0; step < steps; ++step) {
+	for (step = 0; (step < steps) || !steps; ++step) {
+		if (!verbose && !(step % 1000000))
+			printf("Step %lu Band: %lu\n", step, band->len);
+
 		trans = find_transition(mach, current, band);
 		if (!trans || !trans->to) {
 			ret = -EINVAL;
@@ -629,9 +730,13 @@ int turing_machine_simulate_limited(struct turing_machine *mach,
 		}
 		current = trans->to;
 
-		printf("Stepping %s to: %s\n", TURING_DIR2STR(trans->dir),
-								current->name);
-		turing_band_print(band);
+		if (verbose) {
+			printf("Transition: %s:%c -> %s:%c (%s)\n",
+						trans->from->name, trans->read,
+						trans->to->name, trans->write,
+						TURING_DIR2STR(trans->dir));
+			turing_band_print(band);
+		}
 
 		if (current == mach->e0) {
 			printf("Halt condition reached (%lu steps)\n",
@@ -640,7 +745,7 @@ int turing_machine_simulate_limited(struct turing_machine *mach,
 		}
 	}
 
-	printf("\n");
+	turing_band_print(band);
 
 	if (step == steps) {
 		printf("Max steps limit reached (%lu)\n", steps);
@@ -649,164 +754,12 @@ int turing_machine_simulate_limited(struct turing_machine *mach,
 
 	if (ret)
 		printf("Turing machine failed: %d\n", ret);
-	else
-		printf("Turing machine succeeded\n");
 
 	return ret;
 }
 
-static int setup_states_bb3(struct turing_machine *mach)
+int turing_machine_simulate(struct turing_machine *mach,
+						struct turing_band *band)
 {
-	int ret;
-	static struct turing_state zA = TURING_STATE("zA");
-	static struct turing_state zB = TURING_STATE("zB");
-	static struct turing_state zC = TURING_STATE("zC");
-	static struct turing_state ze = TURING_STATE("ze");
-	static struct turing_transition t0 =
-			TURING_TRANSITION(&zA, &zB, '0', '1', TURING_RIGHT);
-	static struct turing_transition t1 =
-			TURING_TRANSITION(&zA, &ze, '1', '1', TURING_RIGHT);
-	static struct turing_transition t2 =
-			TURING_TRANSITION(&zB, &zC, '0', '0', TURING_RIGHT);
-	static struct turing_transition t3 =
-			TURING_TRANSITION(&zB, &zB, '1', '1', TURING_RIGHT);
-	static struct turing_transition t4 =
-			TURING_TRANSITION(&zC, &zC, '0', '1', TURING_LEFT);
-	static struct turing_transition t5 =
-			TURING_TRANSITION(&zC, &zA, '1', '1', TURING_LEFT);
-
-	ret = turing_machine_add_state(mach, &zA);
-	ret = turing_machine_add_state(mach, &zB);
-	ret = turing_machine_add_state(mach, &zC);
-	ret = turing_machine_add_state(mach, &ze);
-	if (ret) {
-		printf("Cannot add state: %d\n", ret);
-		return ret;
-	}
-
-	ret = turing_machine_add_trans(mach, &t0);
-	ret = turing_machine_add_trans(mach, &t1);
-	ret = turing_machine_add_trans(mach, &t2);
-	ret = turing_machine_add_trans(mach, &t3);
-	ret = turing_machine_add_trans(mach, &t4);
-	ret = turing_machine_add_trans(mach, &t5);
-	if (ret) {
-		printf("Cannot add transition: %d\n", ret);
-		return ret;
-	}
-
-	turing_machine_set_begin(mach, &zA);
-	turing_machine_set_end(mach, &ze);
-
-	return 0;
-}
-
-static int setup_states_bb4(struct turing_machine *mach)
-{
-	int ret;
-	static struct turing_state zA = TURING_STATE("zA");
-	static struct turing_state zB = TURING_STATE("zB");
-	static struct turing_state zC = TURING_STATE("zC");
-	static struct turing_state zD = TURING_STATE("zD");
-	static struct turing_state ze = TURING_STATE("ze");
-	static struct turing_transition t0 =
-			TURING_TRANSITION(&zA, &zB, '0', '1', TURING_RIGHT);
-	static struct turing_transition t1 =
-			TURING_TRANSITION(&zA, &zB, '1', '1', TURING_LEFT);
-	static struct turing_transition t2 =
-			TURING_TRANSITION(&zB, &zA, '0', '1', TURING_LEFT);
-	static struct turing_transition t3 =
-			TURING_TRANSITION(&zB, &zC, '1', '0', TURING_LEFT);
-	static struct turing_transition t4 =
-			TURING_TRANSITION(&zC, &ze, '0', '1', TURING_RIGHT);
-	static struct turing_transition t5 =
-			TURING_TRANSITION(&zC, &zD, '1', '1', TURING_LEFT);
-	static struct turing_transition t6 =
-			TURING_TRANSITION(&zD, &zD, '0', '1', TURING_RIGHT);
-	static struct turing_transition t7 =
-			TURING_TRANSITION(&zD, &zA, '1', '0', TURING_RIGHT);
-
-	ret = turing_machine_add_state(mach, &zA);
-	ret = turing_machine_add_state(mach, &zB);
-	ret = turing_machine_add_state(mach, &zC);
-	ret = turing_machine_add_state(mach, &zD);
-	ret = turing_machine_add_state(mach, &ze);
-	if (ret) {
-		printf("Cannot add state: %d\n", ret);
-		return ret;
-	}
-
-	ret = turing_machine_add_trans(mach, &t0);
-	ret = turing_machine_add_trans(mach, &t1);
-	ret = turing_machine_add_trans(mach, &t2);
-	ret = turing_machine_add_trans(mach, &t3);
-	ret = turing_machine_add_trans(mach, &t4);
-	ret = turing_machine_add_trans(mach, &t5);
-	ret = turing_machine_add_trans(mach, &t6);
-	ret = turing_machine_add_trans(mach, &t7);
-	if (ret) {
-		printf("Cannot add transition: %d\n", ret);
-		return ret;
-	}
-
-	turing_machine_set_begin(mach, &zA);
-	turing_machine_set_end(mach, &ze);
-
-	return 0;
-}
-
-int main(int argc, char **argv)
-{
-	int ret;
-	struct turing_machine *mach;
-	struct turing_band *band;
-	static const char blank = '0';
-	static const char sigma[] = { '1' };
-	static const char gamma[] = { };
-
-	ret = turing_band_new(&band, NULL, 0, blank);
-	if (ret) {
-		printf("Cannot create turing band: %d\n", ret);
-		return abs(ret);
-	}
-
-	ret = turing_machine_new(&mach, blank);
-	if (ret) {
-		printf("Cannot create mach: %d\n", ret);
-		goto err_band;
-	}
-
-	ret = turing_machine_set_sigma(mach, sigma, sizeof(sigma));
-	if (ret) {
-		printf("Cannot set sigma alphabet: %d\n", ret);
-		goto err_mach;
-	}
-
-	ret = turing_machine_set_gamma(mach, gamma, sizeof(gamma));
-	if (ret) {
-		printf("Cannot set gamma alphabet: %d\n", ret);
-		goto err_mach;
-	}
-
-	/* ret = setup_states_bb3(mach); */
-	ret = setup_states_bb4(mach);
-	if (ret)
-		goto err_mach;
-
-	printf("Turing machine setup successfully\n");
-	turing_machine_print(mach);
-
-	ret = turing_machine_simulate(mach, band);
-	if (ret) {
-		printf("Cannot simulate turing machine: %d\n", ret);
-		goto err_mach;
-	}
-
-	printf("Turing simulation completed\n");
-
-err_mach:
-	turing_machine_unref(mach);
-err_band:
-	turing_band_free(band);
-	return ret;
+	return turing_machine_simulate_limited(mach, band, 10000, true);
 }
