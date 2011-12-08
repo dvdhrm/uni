@@ -6,8 +6,8 @@
 /*
  * Find best 3-state BusyBeaver.
  * This tests all possible configurations of 3-state turing machines on a 2
- * symbol alphabet. It takes about a day to test all possible 16,777,216
- * machines on my Intel Atom.
+ * symbol alphabet. It takes about a day to test all possible 191,000,000
+ * machines on my Intel Atom. See bb.out for a sample output.
  */
 
 #include <errno.h>
