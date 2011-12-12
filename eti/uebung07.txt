@@ -1,0 +1,94 @@
+ETI - Uebung 7 - David Herrmann
+
+Aufgabe 27:
+1)
+	ex1a.png
+2)
+	ex1b.png
+
+Aufgabe 28:
+1)
+	Die Schaltung wandelt ein serielles Signal auf E in ein paralleles
+	Signal an O. Dabei wird bei jeder steigenden Taktflanke der Wert von E
+	in das nächste FlipFlop in c geladen. Nach 8 Takten werden die Werte aus
+	c in d geflushed und man beginnt von vorne. Die Werte an d liegen dann
+	parallel 8 Takte an.
+
+2)
+	a)
+		Dies ist ein binär-Zähler. Er zählt von 0-7 und fängt dann
+		wieder von vorne an.
+	b)
+		Der Demuxer wird hier als Adressierer benutzt. Er leitet die 1
+		auf den passenden Output.
+	c)
+		Dies ist der aktuelle Puffer. Hier wird das nächste parallele
+		Signal zusammengestellt. Ein E nach dem anderen wird in ein
+		FlipFlop geladen bis alle voll sind.
+	d)
+		Dies ist der parallele Ausgang. Wenn der Puffer in c) voll ist,
+		wird er in d) geladen und steht hier konstant als AUsgang zur
+		Verfügung. So bekommt der Output immer ein volles Byte aus 8 Bit
+		zur Verfügung und bekommt nicht mit, dass das Signal zuerst aus
+		seriellen Daten zusammengestellt wird.
+		Alle 8 Takte werden dabei die Daten aus c) in d) übernommen.
+
+3)
+	Ein einfacher Adressierer kann hier benutzt werden. Zum Beispiel ein
+	einfacher PLA.
+
+4)
+	Theoretisch kann die Schaltung 2^(8+8+3) = 2^19 Zustände annehmen, da so
+	viele FlipFlops vorhanden sind. Da aber d) immer nur die Daten aus c)
+	übernimmt und a) lediglich das aktuelle FlipFlop angibt, sind es
+	effektiv nur 2^8 = 256 Zustände, die die Schaltung annimmt. Also
+	effektiv das nächste Byte.
+
+Aufgabe 29:
+1)
+	Vorteile: Ist nicht so anfällig gegen Erschütterungen, da keine
+	mechanischen Teile verwendet werden. Die Zugriffs-lese-zeiten sind
+	deutlich schneller als bei Festplatten, da kein Lesekopf bewegt werden
+	muss. Die Schreib-Zeiten sind abhängig von der Technik, aber oft auch
+	schneller als die klassischer Festplatten.
+	Nicht so anfällig gegen Temperaturschwankunken. Sie verbraucht weniger
+	Strom, da kein mechanischer Lesekopf bewegt wird.
+	Sie sind wesentlich kleiner.
+
+	Nachteile: Teurer als Festplatten. Bei langer Benutzung wird der
+	Speicher unzuverlässig, da nicht unendlich viele Schreib-Operationen
+	möglich sind. Nach einer sehr begrenzten Schreibanzahl kann eine
+	einzelne Zelle nicht mehr beschrieben, sondern nur noch gelesen werden.
+	Sie nimmt einfach keine neuen Werte mehr auf.
+
+2)
+
+3)
+	Read-Disturb:
+		Wenn eine Zelle häufig gelesen wird, verlieren benachbarte
+		Zellen ihre Werte. Dies geschieht erst nach tausenden an
+		Lese-Operationen, aber deshalb werden bei Flash-Speichern die
+		benachbarten Zellen einer Zelle nach einer bestimmten ANzahl an
+		LeseOperationen neu-beschrieben, sodass ihre Werte nicht
+		verloren gehen. Dies betrifft die Zelle, die gelesen wird,
+		nicht, sondern nur die benachbarten.
+	Memory-wear (wear-leveling):
+		Eine Zelle im Flash-Speicher kann nur begrenzt oft beschrieben
+		werden. Deshalb verteilen Flash-Dateisysteme die INodes quer im
+		ganzen Speicher um möglichst alle SPeicherzellen gleich oft zu
+		benutzen.
+		Dabei werden die Write-Operationen pro Zelle gezählt und die
+		Inodes werden im ganzen SPeicher gleichmäßig verteilt
+		(wear-leveling).
+	YAFFS:
+		Ein Dateisystem für Flash-Speicher. Es hat verschiedene Vorteile
+		gegenüber klassischen Dateisystemen wie ext3/NTFS/etc. Zum
+		Beispiel passt es die Block-Größen an die internen Größen des
+		Flash-Speichers an, da diese oft nur in ganzen Blöcken
+		beschrieben werden können und nicht jede Zelle einzeln.
+		Außerdem können kaputte Flash-Zellen als "kaputt" markiert
+		werden und werden so vom Dateisystem ignoriert um Fehler zu
+		vermeiden.
+
+Aufgabe 30:
+	pla.png
