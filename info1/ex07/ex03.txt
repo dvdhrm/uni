@@ -1,0 +1,301 @@
+Aufgabe 3:
+Voraussetzungen:
+	(define cat
+	  (lambda (xs ys)
+	    (cond
+	      ((empty? xs) ys)
+	      ((pair? xs)
+	        (make-pair (first xs)
+	                   (cat (rest xs) ys))))))
+	(define take
+	  (lambda (n xs)
+	    (cond
+	      ((= n 0) empty)
+	      ((empty? xs) empty)
+	      ((pair? xs)
+	        (make-pair (first xs)
+	                   (take (- n 1) (rest xs)))))))
+	(define drop
+	  (lambda (n xs)
+	    (cond ((= n 0) xs)
+	          ((empty? xs) empty)
+	          ((pair? xs)
+	            (drop (- n 1) (rest xs))))))
+
+Behauptung:
+	∀ l ∈ (list-of %a)
+	∀ n ∈ N
+		(cat (take n l) (drop n l)) ≡ l
+
+Beweis:
+	Beweis durch strukturelle Induktion über Liste l:
+
+	IA: l = empty
+		(cat (take n empty) (drop n empty)) ≡ empty
+
+		(cat (take n empty) (drop n empty))
+
+		[ ersetzen von cat ]
+		⇔ ((lambda (xs ys)
+		     (cond
+		       ((empty? xs) ys)
+		       ((pair? xs)
+		         (make-pair (first xs)
+		                    (cat (rest xs) ys)))))
+		   (take n empty)
+		   (drop n empty))
+
+		[ ersetzen von take ]
+		⇔ ((lambda (xs ys)
+		     (cond
+		       ((empty? xs) ys)
+		       ((pair? xs)
+		         (make-pair (first xs)
+		                    (cat (rest xs) ys)))))
+		   ((lambda (n xs)
+		      (cond
+		        ((= n 0) empty)
+		        ((empty? xs) empty)
+		        ((pair? xs)
+		          (make-pair (first xs)
+		                     (take (- n 1) (rest xs))))))
+		    n empty)
+		   (drop n empty))
+
+		[ auswerten von take-lambda ]
+		⇔ ((lambda (xs ys)
+		     (cond
+		       ((empty? xs) ys)
+		       ((pair? xs)
+		         (make-pair (first xs)
+		                    (cat (rest xs) ys)))))
+		   (cond
+		     ((= n 0) empty)
+		     ((empty? empty) empty)
+		     ((pair? empty)
+		       (make-pair (first empty)
+		                  (take (- n 1) (rest empty)))))
+		   (drop n empty))
+
+		[ für n=0 oder n≠0 äquivalent: ]
+		⇔ ((lambda (xs ys)
+		     (cond
+		       ((empty? xs) ys)
+		       ((pair? xs)
+		         (make-pair (first xs)
+		                    (cat (rest xs) ys)))))
+		   empty
+		   (drop n empty))
+
+		[ ersetzen von drop (und gleich lambda Auswertung) ]
+		⇔ ((lambda (xs ys)
+		     (cond
+		       ((empty? xs) ys)
+		       ((pair? xs)
+		         (make-pair (first xs)
+		                    (cat (rest xs) ys)))))
+		   empty
+		   (cond ((= n 0) empty)
+		         ((empty? empty) empty)
+		         ((pair? empty)
+		           (drop (- n 1) (rest empty)))))
+
+		[ für n=0 und n≠0 äquivalent ]
+		⇔ ((lambda (xs ys)
+		     (cond
+		       ((empty? xs) ys)
+		       ((pair? xs)
+		         (make-pair (first xs)
+		                    (cat (rest xs) ys)))))
+		   empty
+		   empty)
+
+		[ lambda auswerten ]
+		⇔ (cond
+		    ((empty? empty) empty)
+		    ((pair? empty)
+		      (make-pair (first empty)
+		                 (cat (rest empty) empty))))
+		⇔ (cond
+		    (#t empty)
+		    ((pair? empty)
+		      (make-pair (first empty)
+		                 (cat (rest empty) empty))))
+		⇔ empty
+
+	IV: Gelte folgende Behauptung für beliebiges, aber festes l:
+		(cat (take n l) (drop n l)) ≡ l
+
+	IS-1 für n = 0
+	IS-1: l → (make-pair ele l)
+		(cat (take 0 (make-pair ele l))
+		     (drop 0 (make-pair ele l))) ≡ (make-pair ele l)
+
+		(cat (take 0 (make-pair ele l))
+		     (drop 0 (make-pair ele l)))
+
+		[ ersetzen von drop und auswertung der lambda Abstr. ]
+		⇔
+		(cat (take 0 (make-pair ele l))
+		     (cond ((= 0 0) (make-pair ele l))
+		           ((empty? (make-pair ele l)) empty)
+		           ((pair? (make-pair ele l))
+		             (drop (- 0 1) (rest (make-pair ele l))))))
+		⇔
+		(cat (take 0 (make-pair ele l))
+		     (cond (#t (make-pair ele l))
+		           ((empty? (make-pair ele l)) empty)
+		           ((pair? (make-pair ele l))
+		             (drop (- 0 1) (rest (make-pair ele l))))))
+		⇔
+		(cat (take 0 (make-pair ele l))
+		     (make-pair ele l))
+
+		[ ersetzen und auswerten von take lambda Abstr. ]
+		⇔
+		(cat (cond
+		       ((= 0 0) empty)
+		       ((empty? (make-pair ele l)) empty)
+		       ((pair? (make-pair ele l))
+		         (make-pair (first (make-pair ele l))
+		                    (take (- 0 1) (rest (make-pair ele l))))))
+		     (make-pair ele l))
+		⇔
+		(cat (cond
+		       (#t empty)
+		       ((empty? (make-pair ele l)) empty)
+		       ((pair? (make-pair ele l))
+		         (make-pair (first (make-pair ele l))
+		                    (take (- 0 1) (rest (make-pair ele l))))))
+		     (make-pair ele l))
+		⇔
+		(cat empty
+		     (make-pair ele l))
+
+		[ ersetzen und auswerten von cat lambda Abstr. ]
+		⇔
+		(cond
+		  ((empty? empty) (make-pair ele l))
+		  ((pair? empty)
+		    (make-pair (first empty)
+		               (cat (rest empty) (make-pair ele l)))))
+		⇔
+		(cond
+		  (#t (make-pair ele l))
+		  ((pair? empty)
+		    (make-pair (first empty)
+		               (cat (rest empty) (make-pair ele l)))))
+		⇔
+		(make-pair ele l)
+
+	IS-2 für n ≠ 0
+	IS-2: l → (make-pair ele l)
+		(cat (take n (make-pair ele l))
+		     (drop n (make-pair ele l))) ≡ (make-pair ele l)
+
+		(cat (take n (make-pair ele l))
+		     (drop n (make-pair ele l)))
+
+		[ ersetzen von drop und auswertung der lambda Abstr. ]
+		⇔
+		(cat (take n (make-pair ele l))
+		     (cond ((= n 0) (make-pair ele l))
+		           ((empty? (make-pair ele l)) empty)
+		           ((pair? (make-pair ele l))
+		             (drop (- n 1) (rest (make-pair ele l))))))
+		⇔
+		(cat (take n (make-pair ele l))
+		     (cond (#f (make-pair ele l))
+		           ((empty? (make-pair ele l)) empty)
+		           ((pair? (make-pair ele l))
+		             (drop (- n 1) (rest (make-pair ele l))))))
+		⇔
+		(cat (take n (make-pair ele l))
+		     (cond ((empty? (make-pair ele l)) empty)
+		           ((pair? (make-pair ele l))
+		             (drop (- n 1) (rest (make-pair ele l))))))
+		⇔
+		(cat (take n (make-pair ele l))
+		     (cond (#f empty)
+		           ((pair? (make-pair ele l))
+		             (drop (- n 1) (rest (make-pair ele l))))))
+		⇔
+		(cat (take n (make-pair ele l))
+		     (cond ((pair? (make-pair ele l))
+		             (drop (- n 1) (rest (make-pair ele l))))))
+		⇔
+		(cat (take n (make-pair ele l))
+		     (cond (#t
+		             (drop (- n 1) (rest (make-pair ele l))))))
+		⇔
+		(cat (take n (make-pair ele l))
+		     (drop (- n 1) (rest (make-pair ele l))))
+		⇔
+		(cat (take n (make-pair ele l))
+		     (drop (- n 1) l))
+
+		[ ersetzen und auswerten von take lambda Abstr. ]
+		⇔
+		(cat (cond
+		       ((= n 0) empty)
+		       ((empty? (make-pair ele l)) empty)
+		       ((pair? (make-pair ele l))
+		         (make-pair (first (make-pair ele l))
+		                    (take (- n 1) (rest (make-pair ele l))))))
+		     (drop (- n 1) l))
+		⇔
+		(cat (cond
+		       (#f empty)
+		       (#f empty)
+		       (#t
+		         (make-pair (first (make-pair ele l))
+		                    (take (- n 1) (rest (make-pair ele l))))))
+		     (drop (- n 1) l))
+		⇔
+		(cat (make-pair (first (make-pair ele l))
+		                (take (- n 1) (rest (make-pair ele l))))
+		     (drop (- n 1) l))
+		⇔
+		(cat (make-pair ele (take (- n 1) l))
+		     (drop (- n 1) l))
+
+		[ ersetzen und auswerten von cat lambda Abstr. ]
+		⇔
+		((lambda (xs ys)
+		   (cond
+		     ((empty? xs) ys)
+		     ((pair? xs)
+		       (make-pair (first xs)
+		                  (cat (rest xs) ys)))))
+		  (make-pair ele (take (- n 1) l))
+		  (drop (- n 1) l))
+		⇔
+		(cond
+		  ((empty? (make-pair ele (take (- n 1) l)))
+		    (drop (- n 1) l))
+		  ((pair? (make-pair ele (take (- n 1) l)))
+		    (make-pair (first (make-pair ele (take (- n 1) l)))
+		               (cat (rest (make-pair ele (take (- n 1) l)))
+		                    (drop (- n 1) l)))))
+		⇔
+		(cond
+		  (#f
+		    (drop (- n 1) l))
+		  (#t
+		    (make-pair (first (make-pair ele (take (- n 1) l)))
+		               (cat (rest (make-pair ele (take (- n 1) l)))
+		                    (drop (- n 1) l)))))
+		⇔
+		(make-pair (first (make-pair ele (take (- n 1) l)))
+		           (cat (rest (make-pair ele (take (- n 1) l)))
+		                (drop (- n 1) l)))
+		⇔
+		(make-pair ele
+		           (cat (take (- n 1) l)
+		                (drop (- n 1) l)))
+
+		[ IV für (n-1) ]
+		⇔
+		(make-pair ele l)
+
+	Daraus folg die Behauptung.

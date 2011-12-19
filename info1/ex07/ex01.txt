@@ -1,0 +1,109 @@
+Felix Bartusch - David Herrmann - Info-I - VII - Tutor: Nina Flad
+
+Aufgabe 1:
+Voraussetzungen:
+	(: proc-1 (natural -> natural))
+	(define proc-1
+		(lambda (n)
+			(if (= n 0)
+				0
+				(+ n (proc-1 (- n 1))))))
+
+	(: proc-2 (natural -> natural))
+	(define proc-2
+		(lambda (n)
+			(/ (* n
+				(+ n 1))
+			2)))
+Behauptung:
+	proc-1 und proc-2 sind äquivalent auf den natürlichen Zahlen
+Beweis:
+	Beweis durch strukturelle Induktion über Parameter n:
+
+	IA: n = 0
+		(proc-1 0) ⇔ (proc-2 0)
+
+		(proc-1 0)
+		⇔ ((lambda (n)
+			(if (= n 0)
+				0
+				(+ n (proc-1 (- n 1)))))
+			0)
+		⇔ (if (= 0 0)
+			0
+			(+ 0 (proc-1 (- 0 1))))
+		⇔ (if #t
+			0
+			(+ 0 (proc-1 (- 0 1))))
+		⇔ 0
+		⇔ (/ 0
+			2)
+		⇔ (/ (* 0
+			1)
+			2)
+		⇔ (/ (* 0
+			(+ 0 1))
+			2)
+		⇔ ((lambda (n)
+			(/ (* n
+				(+ n 1))
+			2))
+			0)
+		⇔ (proc-2 0)
+
+	IV: Gelte [(proc-1 n) ⇔ (proc-2 n)] für beliebiges aber festes n ∈ N
+
+	IS: n → n+1
+		(proc-1 n+1) ⇔ (proc-2 n+1)
+
+		(proc-1 n+1)
+		⇔ ((lambda (n)
+		     (if (= n 0)
+		         0
+		         (+ n (proc-1 (- n 1)))))
+		   n+1)
+		⇔ (if (= n+1 0)
+		      0
+		      (+ n+1 (proc-1 (- n+1 1))))
+		⇔ (if #f
+		      0
+		      (+ n+1 (proc-1 (- n+1 1))))
+		⇔ (+ n+1 (proc-1 (- n+1 1)))
+		⇔ (+ n+1 (proc-1 n))
+
+		[ (IV) ]
+		⇔ (+ n+1 (proc-2 n))
+
+		[ ersetzen von proc-2 durch Def ]
+		⇔ (+ n+1
+		     ((lambda (n)
+		        (/ (* n
+		              (+ n 1))
+		           2))
+		      n))
+		⇔ (+ n+1
+		     (/ (* n
+		           (+ n 1))
+		        2))
+		⇔ n+1 + (n * (n+1) / 2)
+		⇔ 2(n+1) / 2 + (n * (n+1) / 2)
+		⇔ [2(n+1) + n * (n+1)] / 2
+		⇔ (n+1) * (n + 2) / 2
+		⇔ (n+1) * (n+1 + 1) / 2
+		⇔ (/ [(n+1) * (n+1 + 1)]
+		     2)
+		⇔ (/ (* (n+1)
+		        (n+1 + 1))
+		     2)
+		⇔ (/ (* n+1
+		        (+ n+1
+		           1))
+		     2)
+		⇔ ((lambda (n)
+		     (/ (* n
+		           (+ n 1))
+		        2))
+		   n+1)
+		⇔ (proc-2 n+1)
+
+	Daraus folgt die Behauptung.
