@@ -1,0 +1,160 @@
+Aufgabe 1:
+a1)
+	Sei L entscheidbar:
+	Sei w ∈ Σ* mit |w| ≠ 0
+
+	Es gilt |w| ∈ N
+	Ein Präfix von |w| hat somit die Länge n ≤ |w|. Es existieren somit
+	maximal |w| Präfixe u für die gilt:
+		u* = w
+		M = { u : u* = w } (M ist endlich)
+
+		Sei H = { u : ∀u∈M: u ∈ L } (H ist endlich)
+		Sei π(x) = 1 für x ∈ H sonst 0
+	Da H endlich ist, ist π berechenbar.
+	Da π berechenbar ist, ist L* entscheidbar, da u* = w.
+a2)
+	Analog mit π(x) = 1 für x ∈ H sonst beliebig
+
+b)
+
+Aufgabe 2:
+a)
+	Sei A ⊆ Σ* und B ⊆ Π*
+	Sei f : Σ* → Π* totale Funktion mit w ∈ A ⇔ f(w) ∈ B
+	Sei B entscheidbar mit der charakteristischen Funktion π(x).
+
+	A ist entscheidbar, denn:
+		θ : Σ* → {0,1}
+	mit:
+		θ(x) = π(f(x))
+	ist berechenbar nach Voraussetzung. Und wenn die charakterisitsche
+	Funktion berechenbar ist, ist die Sprache entscheidbar.
+
+b)
+	Sei A ⊆ Σ* und B ⊆ Π*
+	Sei f : Σ* → Π* totale Funktion mit w ∈ A ⇔ f(w) ∈ B
+
+	Es gilt nach a)
+		Ist B entscheidbar ⇒ A ist entscheidbar
+
+	Nach Logik-äquivalenz gilt: (a ⇒ b) ⇔ (!b ⇒ !a)
+	Somit gilt:
+		Ist A nicht entscheidbar ⇒ B ist nicht entscheidbar
+
+Aufgabe 3:
+a)
+	Eine endliche Sprache ist regulär, da ein regulärer Ausdruck existiert,
+	der die Sprache erkennt. Und zwar:
+		(x1) | (x2) | (x3) | ... | (xn)
+	Wie gezeigt auf einem vorherigen Übungsblatt.
+	Wenn eine endliche Sprache regulär ist, existiert somit auch ein
+	endlicher deterministischer Automat, der die Sprache erkennt. Somit ist
+	das Wortproblem gelöst und die charakteristische Funktion π(x) ist
+	berechenbar.
+	Somit ist die Sprache entscheidbar.
+
+b)
+	Die Menge der möglichen Lottozahlen ist endlich. Somit ist auch die
+	Menge mit den Lottozahlen eines beliebigen Tages endlich. Somit ist
+	diese Sprache auch endlich. Nach a) ist diese Sprache entscheidbar.
+
+c)
+	Sei f eine möglicherweise nicht berechenbare oder partielle Funktion.
+	Fall 1:
+		f(42) ist definiert und existent. Damit ist { f(42) } eine
+		endliche Menge. Somit ist { f(42) } entscheidbar nach a).
+	Fall 2:
+		f(42) ist nicht definiert und nicht existent. Somit ist die
+		Menge { f(42) } undefiniert oder leer (je nach Ansicht). Im
+		zweiten Fall wäre die Menge endlich und somit entscheidbar nach
+		a).
+	Auch wenn unbekannt ist, ob Fall 1 oder 2 zutrifft, ist immer bekannt,
+	dass einer von beiden zutreffen muss! Somit ist in beiden Fällen ein
+	Algorithmus bekannt, der die charakterisitische Funktion berechnet. Es
+	ist nicht verlangt, dass berechenbar ist, welcher Fall zutrifft.
+	Somit ist { f(42) } entscheidbar.
+
+d)
+	Sei f eine möglicherweise nicht berechenbare Funktion. Die Sprache
+	f^-1(42) ist nicht immer entscheidbar, denn:
+		Sei g eine Funktion mit: g : {0, 1} → {42} mit:
+			g(x) = 42
+	Sei h die Funktion, die berechnet, ob eine TM auf dem leeren Band hält.
+	Diese Funktion ist nicht berechenbar. Somit ist auch:
+		g(h(x)) nicht berechenbar.
+	Wäre aber die Menge h^-1(g^-1(x)) entscheidbar, wäre somit entscheidbar,
+	ob eine TM hält oder nicht.
+
+Aufgabe 4:
+a)
+	Gegeben eine TM M. Ihre Anzahl von Zuständen ist berechenbar, da die
+	Menge an Zuständen endlich ist.
+	Sei M = (Z, Σ, Τ, δ, z0, Β, E)
+	Die charakteristische Funktion πM, die überprüft, ob M 42 Zustände
+	hat, ist:
+		πM : Σ* → {0, 1}
+		πM(x) = { 1 falls |Z| = 42
+			0 sonst }
+
+	Somit ist auch die Sprache aller TM mit 42 Zuständen berechenbar.
+
+b)
+	
+
+c)
+
+Aufgabe 5:
+	Voraussetzung:
+		L ⊆ Σ*
+	Behauptung:
+		L ist genau dann entscheidbar, wenn es der Länge nach aufzählbar
+		ist.
+	Beweis:
+	"⇐"
+		Sei L ⊆ Σ* der Länge nach aufzählbar
+		Sei L nicht-leer, da sonst trivial.
+
+		Damit existiert:
+			f: N → Σ*
+			f(N) = L
+			i < j => |f(i)| ≤ |f(j)|
+
+		Es existieren nur endlich viele Wörter mit folgender
+		Eigenschaft:
+			u ∈ Σ*: |u| ≤ |w|
+		Die folgende Menge beinhaltet alle diese Wörter:
+			M = { u ∈ Σ*: |u| ≤ |w| }
+		Sei n die Mächtigkeit dieser Menge:
+			n = |M|
+		Nun berechnen wir alle f(x) dieser Menge:
+			K = { f(m) : m ≤ n }
+		Für alle Wörter, die nicht in dieser Menge sind, gilt:
+			x !∈ K ⇒ (|x| > |w|) ∨ (x ∈ L)
+		Da alle x ∈ L mit |x| < |w| Elemente von K sind.
+
+		Es gilt nun: w ∈ L ⇔ w ∈ K
+		Da K endlich ist, ist dies berechenbar und somit
+		L berechenbar.
+
+	"⇒"
+		Sei L ⊆ Σ* entscheidbar und nicht-leer, da sonst trivial.
+		Dann ist die charakteristische Funktion π(x) berechenbar und es
+		existiert ein kürzestes Wort w in L, sodass gilt:
+			y ∈ L => |y| ≥ |w|
+
+		Sei xi das i'te Wort in Σ*. Da Σ* gleich mächtig ist wie N, muss
+		Σ* eine Bijektion zu N haben und somit xi berechenbar sein.
+		Es soll zudem gelten: i < j => |xi| ≤ |xj|
+
+		Sei f eine Funktion von N → Σ* mit:
+			f(0) = w
+			f(n + 1) = { xi für π(xi) = 1
+					f(n) für π(xi) = 0 }
+
+		Damit gilt für jedes xi ∈ Σ*:
+			Ist xi ∈ L:
+				f(i) = xi
+			Ist xi !∈ L existiert auch kein f(n) = xi
+		Und i < j ⇒ f(i) < f(j)
+		Somit ist L der Länge nach aufzählbar.
