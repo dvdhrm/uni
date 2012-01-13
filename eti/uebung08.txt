@@ -1,0 +1,152 @@
+ETI - Uebung 8 - David Herrmann
+
+Aufgabe 30:
+1)
+	Bei C=0 bleibt der Zustand gleich.
+
+	Q2 | Q1 | Q0 | C || Q2++ | Q1++ | Q0++
+	---+----+----+---++------+------+-----
+	 0 |  0 |  0 | 1 ||   0  |   0  |  1
+	 0 |  0 |  1 | 1 ||   0  |   1  |  0
+	 0 |  1 |  0 | 1 ||   0  |   1  |  1
+	 0 |  1 |  1 | 1 ||   1  |   0  |  0
+	 1 |  0 |  0 | 1 ||   1  |   0  |  1
+	 1 |  0 |  1 | 1 ||   1  |   1  |  0
+	 1 |  1 |  0 | 1 ||   1  |   1  |  1
+	 1 |  1 |  1 | 1 ||   0  |   0  |  0
+
+	Graphen: ex30.png
+
+2)
+	Die Schaltung ist ein Binärzähler auf 3-Bit.
+
+3)
+	Es handelt sich um einen Medwedew-Automaten, da die Eingabe nicht zur
+	Berechnung der Ausgabe verwendet wird und gleichzeitig die
+	Binär-Kodierung der Ausgabe auch dem aktuellen Zustand entspricht.
+
+Aufgabe 31:
+1)
+	Eingang:
+		 E1 E0 | Aktion
+		-------+-------------
+		  0  0 | Münzrückgabe
+		  0  1 | Münzeinwurf
+		  1  0 | Cola
+		  1  1 | Limo
+
+	Ausgang:
+		 A1 A0 | Aktion
+		-------+-------
+		  0  0 | Leerlauf
+		  0  1 | Limo
+		  1  0 | Cola
+		  1  1 | Geldrückgabe
+
+	Zustände:
+		 Z | Zustand
+		---+--------
+		 0 | Leerlauf (z0)
+		 1 | Geld eingeworfen (z1)
+
+	Nur bei steigender Taktflanke, also bei Zustandswechsel, wird die
+	jeweilige Funktion ausgeführt. Startzustand ist beides Mal 0-0, also
+	Münzauswurf. Startzustand ist z0.
+
+2)
+	Graph: (Übergänge als E1-E0--A1-A0)
+
+	0-0--0-0
+	1-0--0-0
+	1-1--0-0
+	   __
+	  /  \
+	  |  |
+	  |  \/
+	  |
+	  +--+  0-1--0-0  +--+
+	  |Z0| ---------> |Z1|
+	  +--+            +--+
+	      <-----------/ |
+	        0-0--1-1   /|
+	      <-----------/ |
+	        0-1--0-0   /|
+	      <-----------/ |
+	        1-0--1-0   /
+	      <-----------/
+	        1-1--0-1
+
+3)
+	Zustandübergang:
+		E1 E0  Z || A1 A0 Z++ | Aktion
+		---------++-----------+-------
+		 0  0  0 ||  0  0  0  | -
+		 0  0  1 ||  1  1  0  | Münze rückgeben
+		 0  1  0 ||  0  0  1  | Münze annehmen
+		 0  1  1 ||  0  0  0  | Münzen behalten
+		 1  0  0 ||  0  0  0  | -
+		 1  0  1 ||  1  0  0  | Cola ausgeben
+		 1  1  0 ||  0  0  0  | -
+		 1  1  1 ||  0  1  0  | Limo ausgeben
+
+4)
+	Übergänge:
+		A0 = (Z ∧ ¬E0 ∧ ¬E1) ∨ (Z ∧ E0 ∧ E1)
+		A1 = (Z ∧ ¬E0 ∧ ¬E1) ∨ (Z ∧ ¬E0 ∧ E1)
+		Z++ = (¬Z ∧ E0 ∧ E1)
+	Optimiert:
+		A0 = (Z ∧ ¬E0 ∧ ¬E1) ∨ (Z ∧ E0 ∧ E1)
+		A1 = Z ∧ ¬E0
+		Z++ = ¬Z ∧ E0 ∧ E1
+
+5)
+	Schaltung ex31.png
+
+6)
+	Es handelt sich um einen Mealy-Automat, da die Ausgabe abhängig von der
+	Eingabe ist.
+
+Aufgabe 32:
+1)
+	Zustandsfolge wenn Qi = 0:
+	(Binärkodierung als Q4Q3Q2Q1 und Q4++Q3++Q2++Q1++)
+
+	0000 ⇒ 1000 ⇒ 1100 ⇒ 1110 ⇒ 0111 ⇒ 0011 ⇒ 0001 ⇒ 1000 ⇒ 1100 ⇒ 1110 ⇒ ...
+
+2)
+	Die Schaltung schiebt für Einstellung 1, 2, 3 und 4 die angegebene
+	Anzahl an 1ern/0ern durch das Register. Von links nach rechts werden
+	also 1, 2, 3 oder 4 1er durchgeschoben, danach so viele 0er, dann wieder
+	1er ...
+
+	In Einstellung 5 ist es ein Rotations-Schieberegister. Es gilt somit:
+		Q4++ = Q1
+	Es wird also im Kreis geschoben von links nach rechts.
+
+3)
+	Für Einstellung-3 und dem Intervall [1, 4] gilt, dass der Output ein
+	4mal so langer Takt ist wie der Eingang. Die Taktfrequenz wird also auf
+	ein Viertel gedrosselt.
+	Eine solche Schaltung nennt man Taktwandler.
+
+Aufgabe 33:
+	Zustandsübergang:
+		Q1++ = (¬Q1 ∧ Q2 ∧ Q3 ∧ ¬Q4) ∨ (Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ Q4) ∨
+			(¬Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ Q4) ∨ (¬Q1 ∧ ¬Q2 ∧ Q3 ∧ Q4)
+		Q2++ = (¬Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ ¬Q4) ∨ (Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ Q4) ∨
+			(¬Q1 ∧ ¬Q2 ∧ Q3 ∧ Q4)
+		Q3++ = (¬Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ ¬Q4) ∨ (Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ ¬Q4) ∨
+			(¬Q1 ∧ ¬Q2 ∧ Q3 ∧ Q4)
+		Q4++ = (¬Q1 ∧ Q2 ∧ Q3 ∧ ¬Q4) ∨ (Q1 ∧ Q2 ∧ ¬Q3 ∧ ¬Q4) ∨
+			(Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ ¬Q4) ∨ (¬Q1 ∧ ¬Q2 ∧ Q3 ∧ Q4)
+
+	Optimiert mit KV-Diagrammen (auf Papier):
+		Q1++ = (¬Q1 ∧ Q2 ∧ Q3 ∧ ¬Q4) ∨ (¬Q2 ∧ ¬Q3 ∧ Q4) ∨
+			(¬Q1 ∧ ¬Q2 ∧ Q4)
+		Q2++ = (¬Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ ¬Q4) ∨ (Q1 ∧ ¬Q2 ∧ ¬Q3 ∧ Q4) ∨
+			(¬Q1 ∧ ¬Q2 ∧ Q3 ∧ Q4)
+		Q3++ = (¬Q2 ∧ ¬Q3 ∧ ¬Q4) ∨ (¬Q1 ∧ ¬Q2 ∧ Q3 ∧ Q4)
+		Q4++ = (¬Q1 ∧ Q2 ∧ Q3 ∧ ¬Q4) ∨ (Q1 ∧ ¬Q3 ∧ ¬Q4) ∨
+			(¬Q1 ∧ ¬Q2 ∧ Q3 ∧ Q4)
+
+	Siehe ex33.circ für den Schaltplan.
