@@ -1,0 +1,74 @@
+Aufgabe 2:
+	b ist Binärbaum
+	N(b): Anzahl der Knoten in b
+	E(b): Anzahl der leeren Teilbäume in b
+	D(b): Tiefe des Baumes b
+
+a)
+	Voraussetzung:
+		b Binärbaum
+	Behauptung:
+		P(b): E(b) - 1 = N(b)
+	Beweis:
+		Induktion über b:
+
+		IA: Sei b = the-empty-tree
+			E(the-empty-tree) - 1 = N(the-empty-tree)
+			⇔            1    - 1 = 0
+			⇔                   0 = 0
+
+		IV: Gelte P(l) ∧ P(r) für beliebige aber feste l, r.
+
+		IS: [P(l) ∧ P(r)] ⇒ P((make-node l x r))
+
+			  E((make-node l x r)) - 1 = N((make-node l x r))
+
+				(make-node Vorschrift:)
+			⇔ E((make-node l x r)) - 1 = N(l) + N(r) + 1
+
+				(make-node erstellt keine leeren Teilbäume!)
+			⇔          E(l) + E(r) - 1 = N(l) + N(r) + 1
+				(IV)
+			⇔          E(l) + E(r) - 1 = E(l) - 1 + N(r) + 1
+				(IV)
+			⇔          E(l) + E(r) - 1 = E(l) - 1 + E(r) - 1 + 1
+			⇔          E(l) + E(r) - 1 = E(l) - 1 + E(r)
+			⇔              E(l) + E(r) = E(l) + E(r)
+		Daraus folgt die Behauptung.
+
+b)
+	Voraussetzung:
+		b vollständiger Binärbaum
+	Behauptung:
+		P(b): E(b) = 2^D(b)
+	Beweis:
+		Induktion über b:
+
+		IA: Sei b = the-empty-tree
+			E(the-empty-tree) = 2^D(the-empty-tree)
+			⇔               1 = 2^0
+			⇔               1 = 1
+
+		IV: Gelte P(l) und P(r) für beliebiges aber festes l und r
+		    und l und r haben gleiche Tiefe und sind vollständig.
+		    Ansonsten wäre (make-node l x r) nicht vollständig.
+
+		IS: [P(l) ∧ P(r)] ⇒ P((make-node l x r))
+
+			E((make-node l x r)) = 2^D((make-node l x r))
+
+				(make-node erstellt keine leeren Bäume!)
+			⇔        E(l) + E(r) = 2^D((make-node l x r))
+			⇔        E(l) + E(r) = 2^(1 + (max D(l) + D(r)))
+
+				(Nach Vor. ist D(l) = D(r))
+			⇔        E(l) + E(r) = 2^(1 + D(l))
+			⇔        E(l) + E(r) = 2 * 2^D(l)
+
+				(IV: E(b) = 2^D(b))
+			⇔    2^D(l) + 2^D(r) = 2 * 2^D(l)
+
+				(Nach Vor. ist D(l) = D(r))
+			⇔    2^D(l) + 2^D(l) = 2 * 2^D(l)
+			⇔         2 * 2^D(l) = 2 * 2^D(l)
+		Daraus folgt die Behauptung.
